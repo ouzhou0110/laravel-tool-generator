@@ -4,7 +4,7 @@ namespace Ouzhou\LaravelToolGenerator\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class OuzhouModelCRUDCommand extends Command
+class OuZhouModelCRUDCommand extends Command
 {
 	const MODEL_DIR = './app/Databases/Models/';
 	const SERVICE_DIR = './app/Databases/Services/';

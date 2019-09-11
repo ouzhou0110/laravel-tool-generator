@@ -15,13 +15,13 @@
     ],
     "autoload-dev": {
         "psr-4": {
-            "Ouzhou\\LaravelToolGenerator\\": "src"
+            "OuZhou\\LaravelToolGenerator\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Ouzhou\\LaravelToolGenerator\\OuzhouLaravelToolGeneratorServiceProvider"
+                "OuZhou\\LaravelToolGenerator\\OuZhouLaravelToolGeneratorServiceProvider"
             ],
             "aliases": {
             }

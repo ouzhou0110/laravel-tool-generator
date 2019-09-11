@@ -3,8 +3,8 @@
 namespace Ouzhou\LaravelToolGenerator;
 
 use Illuminate\Support\ServiceProvider;
-use Ouzhou\LaravelToolGenerator\Console\Commands\OuzhouModelCommonClassCommand;
-use Ouzhou\LaravelToolGenerator\Console\Commands\OuzhouModelCRUDCommand;
+use Ouzhou\LaravelToolGenerator\Console\Commands\OuZhouModelCommonClassCommand;
+use Ouzhou\LaravelToolGenerator\Console\Commands\OuZhouModelCRUDCommand;
 
 class OuzhouLaravelToolGeneratorServiceProvider extends ServiceProvider
 {
@@ -23,8 +23,8 @@ class OuzhouLaravelToolGeneratorServiceProvider extends ServiceProvider
 	{
 		if ($this->app->runningInConsole()) {
 			$this->commands([
-				OuzhouModelCommonClassCommand::class,
-				OuzhouModelCRUDCommand::class,
+				OuZhouModelCommonClassCommand::class,
+				OuZhouModelCRUDCommand::class,
 			]);
 		}
 	}

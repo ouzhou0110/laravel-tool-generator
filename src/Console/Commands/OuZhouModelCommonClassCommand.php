@@ -4,7 +4,7 @@ namespace Ouzhou\LaravelToolGenerator\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class OuzhouModelCommonClassCommand extends Command
+class OuZhouModelCommonClassCommand extends Command
 {
 	// 必须app开头
 	const MODEL_COMMON_PATH = 'App\Databases\Models\Commons';
