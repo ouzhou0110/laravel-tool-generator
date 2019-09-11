@@ -13,7 +13,7 @@
             "email": "jw.oz@outlook.com"
         }
     ],
-    "autoload": {
+    "autoload-dev": {
         "psr-4": {
             "OuZhou\\LaravelToolGenerator\\": "src"
         }
