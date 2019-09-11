@@ -3,10 +3,10 @@
 namespace OuZhou\LaravelToolGenerator;
 
 use Illuminate\Support\ServiceProvider;
-use Ouzhou\LaravelToolGenerator\Console\Commands\OuZhouModelCommonClassCommand;
-use Ouzhou\LaravelToolGenerator\Console\Commands\OuZhouModelCRUDCommand;
+use OuZhou\LaravelToolGenerator\Console\Commands\ModelCommonClassGeneratorCommand;
+use OuZhou\LaravelToolGenerator\Console\Commands\ModelCRUDCommand;
 
-class OuZhouLaravelToolGeneratorServiceProvider extends ServiceProvider
+class GeneratorServiceProvider extends ServiceProvider
 {
 	/**
 	 * 服务提供者加是否延迟加载.
@@ -23,8 +23,8 @@ class OuZhouLaravelToolGeneratorServiceProvider extends ServiceProvider
 	{
 		if ($this->app->runningInConsole()) {
 			$this->commands([
-				OuZhouModelCommonClassCommand::class,
-				OuZhouModelCRUDCommand::class,
+				ModelCommonClassGeneratorCommand::class,
+				ModelCRUDCommand::class,
 			]);
 		}
 	}

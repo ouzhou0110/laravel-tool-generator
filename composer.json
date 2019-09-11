@@ -21,7 +21,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "OuZhou\\LaravelToolGenerator\\OuZhouLaravelToolGeneratorServiceProvider"
+                "OuZhou\\LaravelToolGenerator\\GeneratorServiceProvider"
             ],
             "aliases": {
             }
