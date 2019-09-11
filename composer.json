@@ -28,7 +28,7 @@
         }
     },
     "require": {
-        "php": ">=7.0.*",
+        "php": "7.0.*",
         "ouzhou/laravel-tool-generator": "1.0.1"
     }
 }
