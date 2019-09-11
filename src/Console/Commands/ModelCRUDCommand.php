@@ -403,7 +403,7 @@ CODE;
 		$arr = preg_split('/["\\/","\\\"]/', $baseName);
 		
 		// 文件名
-		$fileName = end($arr);
+		$fileName = ucfirst(end($arr));
 		// 文件路径
 		if (count($arr) > 1) { // 如果指定文件路径就删除文件名
 			unset($arr[array_key_last($arr)]);

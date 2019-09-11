@@ -5,6 +5,8 @@ namespace OuZhou\LaravelToolGenerator;
 use Illuminate\Support\ServiceProvider;
 use OuZhou\LaravelToolGenerator\Console\Commands\ModelCommonClassGeneratorCommand;
 use OuZhou\LaravelToolGenerator\Console\Commands\ModelCRUDCommand;
+use OuZhou\LaravelToolGenerator\Tools\StaticClasses\JokerFileUploader;
+use OuZhou\LaravelToolGenerator\Tools\StaticClasses\JokerPaginator;
 
 class GeneratorServiceProvider extends ServiceProvider
 {
@@ -35,7 +37,8 @@ class GeneratorServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-	
+		JokerPaginator::injectIntoBuilder();
+		JokerFileUploader::class;
 	}
 	/**
 	 * Get the services provided by the provider.
