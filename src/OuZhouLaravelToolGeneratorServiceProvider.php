@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Ouzhou\LaravelToolGenerator\Console\Commands\OuZhouModelCommonClassCommand;
 use Ouzhou\LaravelToolGenerator\Console\Commands\OuZhouModelCRUDCommand;
 
-class OuzhouLaravelToolGeneratorServiceProvider extends ServiceProvider
+class OuZhouLaravelToolGeneratorServiceProvider extends ServiceProvider
 {
 	/**
 	 * 服务提供者加是否延迟加载.
