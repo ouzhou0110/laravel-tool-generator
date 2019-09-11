@@ -445,7 +445,7 @@ CODE;
 	{
 		$dir = dirname($file);
 		if (file_exists($file)) {
-			echo 'Exists!' . PHP_EOL . 'Path:' . $file . PHP_EOL;
+			echo 'Exists => Path:' . $file . PHP_EOL;
 			return false;
 		}
 		if (!file_exists($dir)) {
@@ -453,10 +453,10 @@ CODE;
 		}
 		$result = file_put_contents($file, $code);
 		if ($result ) {
-			echo 'Success!' . PHP_EOL . 'Path:' . $file . PHP_EOL;
+			echo 'Success => Path:' . $file . PHP_EOL;
 			return true;
 		}
-		echo 'Fail!' . PHP_EOL . 'Path:' . $file . PHP_EOL;
+		echo 'Fail => Path:' . $file . PHP_EOL;
 		return false;
 	}
 	

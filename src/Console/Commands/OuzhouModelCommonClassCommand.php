@@ -28,14 +28,14 @@ class OuzhouModelCommonClassCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'ouzhou:commonClass';
+    protected $signature = 'ouzhou:modelGenerator';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '自动生成项目所需工具类';
+    protected $description = '自动生成项目模型所需基础依赖类';
 
     /**
      * Create a new command instance.
@@ -784,7 +784,7 @@ CODE;
 	{
 		$dir = dirname($file);
 		if (file_exists($file)) {
-			echo 'Exists!' . PHP_EOL . 'Path:' . $file . PHP_EOL;
+			echo 'Exists => Path:' . $file . PHP_EOL;
 			return false;
 		}
 		if (!file_exists($dir)) {
@@ -792,10 +792,10 @@ CODE;
 		}
 		$result = file_put_contents($file, $code);
 		if ($result ) {
-			echo 'Success!' . PHP_EOL . 'Path:' . $file . PHP_EOL;
+			echo 'Success => Path:' . $file . PHP_EOL;
 			return true;
 		}
-		echo 'Fail!' . PHP_EOL . 'Path:' . $file . PHP_EOL;
+		echo 'Fail => Path:' . $file . PHP_EOL;
 		return false;
 	}
 	

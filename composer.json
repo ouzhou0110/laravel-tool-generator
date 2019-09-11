@@ -2,7 +2,7 @@
     "name": "ouzhou/laravel-tool-generator",
     "description": "Joker-oz laravel tool generator artisan command",
     "type": "library",
-    "version": "v1.0.0",
+    "version": "v1.0.1",
     "license": "MIT",
     "keywords": ["artisan", "command", "tool"],
     "time":"2019-09-10",
@@ -13,7 +13,7 @@
             "email": "jw.oz@outlook.com"
         }
     ],
-    "autoload": {
+    "autoload-dev": {
         "psr-4": {
             "Ouzhou\\LaravelToolGenerator\\": "src"
         }
@@ -28,5 +28,7 @@
         }
     },
     "require": {
+        "php": ">=7.0.*",
+        "ouzhou/laravel-tool-generator": "1.0.1"
     }
 }
