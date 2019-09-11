@@ -1,6 +1,6 @@
 <?php
 
-namespace Ouzhou\LaravelToolGenerator\Console\Commands;
+namespace OuZhou\LaravelToolGenerator\Console\Commands;
 
 use Illuminate\Console\Command;
 

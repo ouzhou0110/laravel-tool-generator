@@ -1,6 +1,6 @@
 <?php
 
-namespace Ouzhou\LaravelToolGenerator;
+namespace OuZhou\LaravelToolGenerator;
 
 use Illuminate\Support\ServiceProvider;
 use Ouzhou\LaravelToolGenerator\Console\Commands\OuZhouModelCommonClassCommand;
