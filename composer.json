@@ -1,11 +1,12 @@
 {
     "name": "ouzhou/laravel-tool-generator",
-    "description": "Joker-oz\u0000\u0000\u0000\u0000\u0000laravel\u0000\u0000\u0000\u0000\u0000\u0000artisan command",
+    "description": "Joker-oz laravel tool generator artisan command",
     "type": "library",
     "version": "v1.0.0",
     "license": "MIT",
     "keywords": ["artisan", "command", "tool"],
     "time":"2019-09-10",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "ouzhou",
@@ -17,8 +18,15 @@
             "Ouzhou\\LaravelToolGenerator\\": "src"
         }
     },
-    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ouzhou\\LaravelToolGenerator\\OuzhouLaravelToolGeneratorServiceProvider"
+            ],
+            "aliases": {
+            }
+        }
+    },
     "require": {
-
     }
 }
