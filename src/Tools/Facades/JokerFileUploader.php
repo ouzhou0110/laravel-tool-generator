@@ -1,11 +1,12 @@
 <?php
+
 namespace OuZhou\LaravelToolGenerator\Tools\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use OuZhou\LaravelToolGenerator\Exceptions\FileNumOverflowException;
 use OuZhou\LaravelToolGenerator\Exceptions\MakeDirFailException;
 use OuZhou\LaravelToolGenerator\Exceptions\NotFoundFileException;
-use Symfony\Component\HttpFoundation\File\{UploadedFile};
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class JokerFileUploader extends Facade
 {
@@ -22,7 +23,7 @@ class JokerFileUploader extends Facade
 	
 	// 允许上传的拓展命 -- 文件
 	const ALLOW_FILE_EXTENSION = [
-		'xls', 'xlsx',
+		'xls', 'doc', 'docs', 'txt', 'md', 'pdf',
 	];
 	
 	// 图片储存位置 -- 基础路径
@@ -53,16 +54,16 @@ class JokerFileUploader extends Facade
 	 * @param array $files Request::file() 传递的数据
 	 * @param string $relativePath 图片相对路径：basePath:/uploads/images/
 	 * @param int $max
+	 * @param array $allowExtensions
 	 * @return array
 	 * @throws FileNumOverflowException
 	 * @throws MakeDirFailException
 	 * @throws NotFoundFileException
 	 */
-	public static function images(array $files, string $relativePath = 'common', int $max = 0)
+	public static function images(array $files, string $relativePath = 'common', int $max = 1, array $allowExtensions = [])
 	{
 		$path = self::FILE_SAVE_DIR . self::IMAGE_BASE_PATH . $relativePath;
-		
-		return (new self())->baseUploader($files, $path, self::ALLOW_FILE_EXTENSION_IMAGE, $max);
+		return (new self())->baseUploader($files, $path, count($allowExtensions) ? $allowExtensions : self::ALLOW_FILE_EXTENSION_IMAGE, $max);
 		
 	}
 	
@@ -75,14 +76,15 @@ class JokerFileUploader extends Facade
 	 * @param $file
 	 * @param string $relativePath
 	 * @param int $max
+	 * @param array $allowExtensions
 	 * @return mixed
 	 * @throws FileNumOverflowException
 	 * @throws MakeDirFailException
 	 * @throws NotFoundFileException
 	 */
-	public static function image($file, string $relativePath = 'common', int $max = 0)
+	public static function image($file, string $relativePath = 'common', int $max = 1, array $allowExtensions = [])
 	{
-		$res = self::images([$file], $relativePath, $max);
+		$res = self::images([$file], $relativePath, $max, $allowExtensions);
 		
 		return (array_first($res['successList']) ?? false);
 	}
@@ -96,16 +98,17 @@ class JokerFileUploader extends Facade
 	 * @param array $files Request::file() 传递的数据
 	 * @param string $relativePath 图片相对路径：basePath:/uploads/images/
 	 * @param int $max
+	 * @param array $allowExtensions
 	 * @return array
 	 * @throws FileNumOverflowException
 	 * @throws MakeDirFailException
 	 * @throws NotFoundFileException
 	 */
-	public static function files(array $files, string $relativePath = 'common', int $max = 0)
+	public static function files(array $files, string $relativePath = 'common', int $max = 1, array $allowExtensions = [])
 	{
 		$path = self::FILE_SAVE_DIR . self::OTHER_FILE_BASE_PATH . $relativePath;
 		
-		return (new self())->baseUploader($files, $path, self::ALLOW_FILE_EXTENSION, $max);
+		return (new self())->baseUploader($files, $path, count($allowExtensions) ? $allowExtensions : self::ALLOW_FILE_EXTENSION, $max);
 		
 	}
 	
@@ -118,14 +121,15 @@ class JokerFileUploader extends Facade
 	 * @param $file
 	 * @param string $relativePath
 	 * @param int $max
+	 * @param array $allowExtensions
 	 * @return mixed
 	 * @throws FileNumOverflowException
 	 * @throws MakeDirFailException
 	 * @throws NotFoundFileException
 	 */
-	public static function file($file, string $relativePath = 'common', int $max = 0)
+	public static function file($file, string $relativePath = 'common', int $max = 1, array $allowExtensions = [])
 	{
-		$res = self::files([$file], $relativePath, $max);
+		$res = self::files([$file], $relativePath, $max, $allowExtensions);
 		
 		return (array_first($res['successList']) ?? false);
 	}
@@ -146,7 +150,7 @@ class JokerFileUploader extends Facade
 	 * @throws NotFoundFileException
 	 * @throws \Exception
 	 */
-	private function baseUploader(array $files, string $path,array $allowExtension ,int $max = 0)
+	private function baseUploader(array $files, string $path, array $allowExtension, int $max = 1)
 	{
 		// 成功上传列表
 		$successList = [];
@@ -174,7 +178,7 @@ class JokerFileUploader extends Facade
 		// 上传文件
 		foreach ($files as $file) {
 			// 1. 检测类型是否正确
-			if ($file instanceof UploadedFile) {
+			if (!$file instanceof UploadedFile) {
 				throw new NotFoundFileException();
 			}
 			// 2. 判断扩展名是否被允许

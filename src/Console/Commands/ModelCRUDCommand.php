@@ -74,38 +74,8 @@ class ModelCRUDCommand extends Command
 	 */
 	private static function modelGenerator($config)
 	{
-		$code = <<<CODE
-<?php
-
-/**
-*
-* Author: Joker-oz
-* Date: 2019-09-09
-*/
-namespace @{namespace};
-
-use @{modelCommon};
-/**
- * Class @{fileName}
- */
-class @{fileName} extends @{commonModel}
-{
-	// 数据表名
-	protected \$table = '@{tableName}';
-	
-	/**
-	* 远程一对多或者远程一对一的参数提示
-	* @param1 最终目标表
-	* @param2 中间表
-	* @param3 中间表外键 -- 对应当前 model 主键
-	* @param4 最终目标表外键 -- 对应中间表主键
-	* @param5 当前模型主键
-	* @param6 中间表主键
-	*/
-	
-
-}
-CODE;
+		// 加载模板
+		require_once __DIR__ . '/Resources/CRUD/model.php';
 		// 拼接对应数据
 		// namespace
 		$namespace = self::MODEL_NAMESPACE . $config->namespace;
@@ -142,44 +112,8 @@ CODE;
 	 */
 	private static function actionGenerator($config)
 	{
-		$code = <<<CODE
-<?php
-
-/**
-*
-* Author: Joker-oz
-* Date: 2019-09-09
-*/
-namespace @{namespace};
-
-use @{modelPackage};
-use Illuminate\Database\Eloquent\Builder;
-use @{modelCommon};
-
-/**
- * 用于数据库的各种 CUD(写、改、删) 操作
- * Class @{fileName}
- */
-class @{fileName} extends @{commonModel}
-{
-
-    /**
-     * @var @{modelName}|Builder
-     * 模型
-     */
-    protected \$model;
-
-    /**
-     * @return string 可以实例化的模型类名
-     */
-    protected function model(): string
-    {
-        return @{modelName}::class;
-    }
-    
-}
-CODE;
-		
+		// 加载模板
+		require_once __DIR__ . '/Resources/CRUD/action.php';
 		// 拼接对应数据
 		// namespace
 		$namespace = self::ACTION_NAMESPACE . $config->namespace;
@@ -223,44 +157,8 @@ CODE;
 	 */
 	private static function repositoryGenerator($config)
 	{
-		$code = <<<CODE
-<?php
-
-/**
-*
-* Author: Joker-oz
-* Date: 2019-09-09
-*/
-namespace @{namespace};
-
-use @{modelPackage};
-use Illuminate\Database\Eloquent\Builder;
-use @{modelCommon};
-
-/**
- * 用于数据库的各种 R 操作
- * Class @{fileName}
- */
-class @{fileName} extends @{commonModel}
-{
-
-    /**
-     * @var @{modelName}|Builder
-     * 模型
-     */
-    protected \$model;
-
-    /**
-     * @return string 可以实例化的模型类名
-     */
-    protected function model(): string
-    {
-        return @{modelName}::class;
-    }
-    
-}
-CODE;
-		
+		// 加载模板
+		require_once __DIR__ . '/Resources/CRUD/repository.php';
 		// 拼接对应数据
 		// namespace
 		$namespace = self::REPOSITORY_NAMESPACE . $config->namespace;
@@ -304,42 +202,8 @@ CODE;
 	 */
 	private static function serviceGenerator($config)
 	{
-		$code = <<<CODE
-<?php
-
-/**
-*
-* Author: Joker-oz
-* Date: 2019-09-09
-*/
-namespace @{namespace};
-
-// 引入当前模型的CRUD操作
-use @{actionPackage};
-use @{repositoryPackage};
-
-/**
- * service 层，处理业务逻辑
- * Class @{fileName}
- */
-class @{fileName}
-{
-
-	// CUD 操作
-	private \$@{action};
-	// R操作
-	private \$@{repository};
-	
-	// 注入CRUD操作
-	public function __construct()
-	{
-		\$this->@{action} = app()->make(@{actionClass}::class);
-		\$this->@{repository} = app()->make(@{repositoryClass}::class);
-	}
-    
-}
-CODE;
-		
+		// 加载模板
+		require_once __DIR__ . '/Resources/CRUD/service.php';
 		// 拼接对应数据
 		// namespace
 		$namespace = self::SERVICE_NAMESPACE . $config->namespace;
@@ -376,6 +240,10 @@ CODE;
 		$code = str_replace('@{repositoryPackage}', $repositoryPackage, $code); // 模型包路径
 		$code = str_replace('@{repository}', $repositoryName, $code); // 模型名称
 		$code = str_replace('@{repositoryClass}', $repositoryClass, $code); // 类名
+		
+		// 替换公共资源路径
+		$code = str_replace('@{commonServicePackage}', self::SERVICE_COMMON, $code);
+		$code = str_replace('@{commonService}', 'CommonService', $code);
 		
 		// 生成文件
 		// 1. 拼接文件路径和文件名
