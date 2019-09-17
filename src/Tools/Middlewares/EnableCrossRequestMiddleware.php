@@ -15,10 +15,10 @@ class EnableCrossRequestMiddleware
 	public function handle($request, Closure $next)
 	{
 		$response = $next($request);
-		$response->headers->set('Access-Control-Allow-Origin', $request->header('Origin')); // laravel 5.6版本以上
-		$response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, Cookie, Accept, multipart/form-data, application/json, x-xsrf-token');
-		$response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, OPTIONS, DELETE');
-		$response->headers->set('Access-Control-Allow-Credentials', 'true');
+		$response->headers->set('Access-Control-Allow-Origin', config('jokerEnableCrossRequest.origin')); // 允许的域名
+		$response->headers->set('Access-Control-Allow-Headers', config('jokerEnableCrossRequest.headers')); // 允许的请求头
+		$response->headers->set('Access-Control-Allow-Methods', config('jokerEnableCrossRequest.methods')); // 允许的请求类型
+		$response->headers->set('Access-Control-Allow-Credentials', config('jokerEnableCrossRequest.cookie')); // 是否支持cookie--默认开启
 		return $response;
 	}
 }

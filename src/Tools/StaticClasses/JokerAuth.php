@@ -6,150 +6,32 @@ use Cookie;
 
 class JokerAuth
 {
-	const COOKIE_NAME = 'user_token';
-	
 	/**
-	 * Function: getCookie
-	 * Notes: 返回储存着cookie的token
+	 * Function: __callStatic
+	 * Notes: 根据环境调用对应的方法--默认cookie模式
 	 * User: Joker
 	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-08-07  17:45
-	 * @param $userId
-	 * @param string $identity 登录者身份
-	 * @param array $data
-	 * @return \Symfony\Component\HttpFoundation\Cookie
-	 * @throws \Exception
+	 * Date: 2019-09-17  16:19
+	 * @param $name
+	 * @param $arguments
+	 * @return mixed
 	 */
-	public static function getCookie($userId,$identity = '',$identiyNum = 1, $data = [])
+	public static function __callStatic($name, $arguments)
 	{
-		// 存入session
-		$secretKey = bcrypt(bcrypt(time().$userId.random_bytes(20)));
-		session([
-			$secretKey => [
-				'id' =>$userId,
-				'identity' => $identity,
-				'identityNum' => $identiyNum,
-				'data' => $data
-			]
-		]);
-		return Cookie::make(self::COOKIE_NAME,$secretKey);
-	}
-	
-	/**
-	 * Function: logout
-	 * Notes: 退出登录
-	 * User: Joker
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-08-07  17:55
-	 * @param
-	 * @return bool
-	 */
-	public static function logout()
-	{
-		$request = request();
-		if ($key = $request->cookie(self::COOKIE_NAME)) {
-			session()->forget($key);
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Function: checkLogin
-	 * Notes: 检查是否登录了或者登录失败
-	 * User: Joker
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-08-07  17:50
-	 * @param
-	 * @return bool
-	 */
-	public static function checkLogin()
-	{
-		$request = request();
-		if ($key = $request->cookie(self::COOKIE_NAME)) {
-			if (session($key)) {
-				return true;
+		// 使用cookie做登录验证
+		if (env('LOGIN_METHOD') == 'cookie' || !env('LOGIN_METHOD')) {
+			// 排除getCookie方法--参数特殊处理
+			if ($name == 'login') {
+				return JokerAuthByCookie::$name(...$arguments);
 			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Function: getUserId
-	 * Notes: 返回登录者id
-	 * User: Joker
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-08-07  18:24
-	 * @param
-	 * @return \Illuminate\Session\SessionManager|\Illuminate\Session\Store|mixed|null
-	 */
-	public static function getUserId()
-	{
-		$request = request();
-		if ($key = $request->cookie(self::COOKIE_NAME)) {
-			if ($temp = session($key)) {
-				return $temp['id'];
+			return JokerAuthByCookie::$name($arguments[0]);
+		} else {
+			// 排除getCookie方法--参数特殊处理
+			if ($name == 'login') {
+				return JokerAuthByToken::$name(...$arguments);
 			}
+			return JokerAuthByToken::$name($arguments[0]);
 		}
-		return null;
-	}
-	
-	/**
-	 * Function: getUser
-	 * Notes: 返回登录者信息
-	 * User: Joker
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-08-12  17:16
-	 * @param
-	 * @return |null
-	 */
-	public static function getUser()
-	{
-		$request = request();
-		if ($key = $request->cookie(self::COOKIE_NAME)) {
-			if ($temp = session($key)) {
-				return $temp['data'];
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Function: getIdentity
-	 * Notes: 返回登录者身份
-	 * User: Joker
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-08-08  11:14
-	 * @param
-	 * @return |null
-	 */
-	public static function getIdentity() {
-		$request = request();
-		if ($key = $request->cookie(self::COOKIE_NAME)) {
-			if ($temp = session($key)) {
-				return $temp['identity'];
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Function: getIdentityNum
-	 * Notes: 返回登录者身份 number
-	 * User: Joker
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-08-12  12:07
-	 * @param
-	 * @return int
-	 */
-	public static function getIdentityNum() {
-		$request = request();
-		if ($key = $request->cookie(self::COOKIE_NAME)) {
-			if ($temp = session($key)) {
-				return $temp['identityNum'];
-			}
-		}
-		return 0;
 	}
 	
 }
