@@ -26,6 +26,17 @@ class GeneratorServiceProvider extends ServiceProvider
 	 * 跨域注册--获取注册位置标识
 	 */
 	const JOKER_MIDDLEWARE_KERNEL = 'protected $middleware = [';
+	
+	/**
+	 * api响应注入controller--获取注册位置标识--注入包
+	 */
+	const JOKER_API_RESPONSE_CONTROLLER_PACKAGE = 'namespace App\Http\Controllers;';
+	
+	/**
+	 * api响应注入controller--获取注册位置标识--名称
+	 */
+	const JOKER_API_RESPONSE_CONTROLLER_NAME = 'use AuthorizesRequests,';
+	
 	/**
 	 * Bootstrap the application services.
 	 *
@@ -43,6 +54,15 @@ class GeneratorServiceProvider extends ServiceProvider
 		/*******************直接生成model通用配置*******************/
 		Artisan::call('ouzhou:modelGenerator');
 		
+		
+		/*********************向controller注入apiResponseInjector*************************/
+		$data = file_get_contents(app_path('Http/Controllers/Controller.php'));
+		if (false === strpos($data, self::JOKER_INJECT_TOKEN)) { // 是否已经注入，避免重复注入
+			if (false !== strpos($data, self::JOKER_API_RESPONSE_CONTROLLER_NAME)) { // 检查是否版本更新，导致定位符不存在了
+				self::jokerApiResponseInjectorController($data);
+			}
+		}
+		
 		/**********************发布跨域配置****************************/
 		$this->publishes([
 			__DIR__ . '\Tools\Configs\jokerEnableCrossRequest.php' => config_path('jokerEnableCrossRequest.php'),
@@ -50,6 +70,8 @@ class GeneratorServiceProvider extends ServiceProvider
 		Artisan::call('vendor:publish', [
 			'--tag' => 'config'
 		]);
+		
+		
 
 		/***********为跨域注入到Kernel.php的middleware数组中**************/
 		$data = file_get_contents(app_path('Http/Kernel.php'));
@@ -59,8 +81,12 @@ class GeneratorServiceProvider extends ServiceProvider
 			}
 		}
 		
+		
+		
 		/********************判断.env配置文件是否存在--不存在就复制一份**********/
 		file_exists(base_path('.env')) || copy(base_path('.env.example'), base_path('.env'));
+		
+		
 		
 		/********************判断.env文件中是不是已经存在校验码**********/
 		$data = file_get_contents('.env');
@@ -127,5 +153,42 @@ CODE;
 		$data = str_replace(self::JOKER_MIDDLEWARE_KERNEL, $code, $data);
 		// 重新写入文件
 		file_put_contents(app_path('Http/Kernel.php'), $data);
+	}
+	
+	/**
+	 * Function: jokerApiResponseInjectorController
+	 * Notes: 将自定义的api响应依赖加载到controller中
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-17  18:39
+	 * @param $data
+	 */
+	private static function jokerApiResponseInjectorController($data)
+	{
+		// 引入的包替换
+		$code1 = <<< CODE
+// 注入标识：@{token}
+namespace App\Http\Controllers;
+	
+use OuZhou\LaravelToolGenerator\Tools\Traits\JokerApiResponseInjector;
+CODE;
+		// 引入的类名称替换
+		$code2 = <<<CODE
+use AuthorizesRequests, JokerApiResponseInjector,
+CODE;
+
+		// 替换唯一标识符
+		$code1 = str_replace('@{token}', self::JOKER_INJECT_TOKEN, $code1);
+		// 替换包和名称
+		$data = str_replace([
+			self::JOKER_API_RESPONSE_CONTROLLER_PACKAGE,
+			self::JOKER_API_RESPONSE_CONTROLLER_NAME
+		], [
+			$code1, // 包
+			$code2 // 名称
+		], $data);
+		// 重新写入文件
+		file_put_contents(app_path('Http/Controllers/Controller.php'), $data);
+	
 	}
 }
