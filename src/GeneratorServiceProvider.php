@@ -98,7 +98,7 @@ class GeneratorServiceProvider extends ServiceProvider
 		
 		
 		/********************判断.env文件中是不是已经存在校验码**********/
-		$data = file_get_contents('.env');
+		$data = file_get_contents(base_path('.env'));
 		/************为自定义登录验证注入配置到.env**************/
 		if (false === strpos($data, self::JOKER_INJECT_TOKEN)) {
 			self::jokerAuthInjectEnv();
