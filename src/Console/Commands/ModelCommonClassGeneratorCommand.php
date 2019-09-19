@@ -28,38 +28,38 @@ class ModelCommonClassGeneratorCommand extends Command
 	const TOOL_PATH = 'OuZhou\LaravelToolGenerator\Tools\StaticClasses\JokerTool';
 	const TOOL_NAME = 'JokerTool';
 	
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'ouzhou:modelGenerator';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = '自动生成项目模型所需基础依赖类';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
-    {
-        // 注入model通用方法
+	/**
+	 * The name and signature of the console command.
+	 *
+	 * @var string
+	 */
+	protected $signature = 'ouzhou:modelGenerator';
+	
+	/**
+	 * The console command description.
+	 *
+	 * @var string
+	 */
+	protected $description = '自动生成项目模型所需基础依赖类';
+	
+	/**
+	 * Create a new command instance.
+	 *
+	 * @return void
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+	}
+	
+	/**
+	 * Execute the console command.
+	 *
+	 * @return mixed
+	 */
+	public function handle()
+	{
+		// 注入model通用方法
 		self::modelFunctions();
 		// 注入model的通用异常处理
 		self::modelExceptionsInit();
@@ -77,7 +77,7 @@ class ModelCommonClassGeneratorCommand extends Command
 		// 注入service的通用方法
 		self::serviceFunctions();
 		// 注入service的通用异常处理
-    }
+	}
 	
 	
 	/**
@@ -87,7 +87,7 @@ class ModelCommonClassGeneratorCommand extends Command
 	 * Email: <jw.oz@outlook.com>
 	 * Date: 2019-09-09  18:05
 	 */
-    private static function modelFunctions()
+	private static function modelFunctions()
 	{
 		// 加载模型
 		require_once __DIR__ . '/Resources/Generator/model.php';
@@ -99,7 +99,7 @@ class ModelCommonClassGeneratorCommand extends Command
 		$file = './' . lcfirst(str_replace('\\', '/', self::MODEL_COMMON_PATH)) . '/' . self::MODEL_NAME . '.php';
 		
 		self::save($file, $code);
-
+		
 	}
 	
 	
@@ -297,18 +297,20 @@ class ModelCommonClassGeneratorCommand extends Command
 	{
 		$dir = dirname($file);
 		if (file_exists($file)) {
-			echo 'Exists => Path:' . $file . PHP_EOL;
+			echo 'Exists => Path: "' . $file . '"' . PHP_EOL;
 			return false;
 		}
 		if (!file_exists($dir)) {
-			mkdir($dir, 777, true);
+			if (!mkdir($dir, 777, true) && !is_dir($dir)) {
+				throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+			}
 		}
 		$result = file_put_contents($file, $code);
-		if ($result ) {
-			echo 'Success => Path:' . $file . PHP_EOL;
+		if ($result) {
+			echo 'Success => Path: "' . $file . '"' . PHP_EOL;
 			return true;
 		}
-		echo 'Fail => Path:' . $file . PHP_EOL;
+		echo 'Fail => Path: "' . $file . '"' . PHP_EOL;
 		return false;
 	}
 	

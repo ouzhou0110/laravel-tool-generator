@@ -37,6 +37,9 @@ class GeneratorServiceProvider extends ServiceProvider
 	 */
 	const JOKER_API_RESPONSE_CONTROLLER_NAME = 'use AuthorizesRequests,';
 	
+	// 生成模板根路径
+	const COMMON_PACKAGE = 'app/Databases';
+	
 	/**
 	 * Bootstrap the application services.
 	 *
@@ -52,7 +55,10 @@ class GeneratorServiceProvider extends ServiceProvider
 			]);
 		}
 		/*******************直接生成model通用配置*******************/
-		Artisan::call('ouzhou:modelGenerator');
+		// 判断是否已经生成
+		if (!is_dir(base_path(self::COMMON_PACKAGE))) {
+			Artisan::call('ouzhou:modelGenerator');
+		}
 		
 		
 		/*********************向controller注入apiResponseInjector*************************/
@@ -64,15 +70,20 @@ class GeneratorServiceProvider extends ServiceProvider
 		}
 		
 		/**********************发布跨域配置****************************/
+		// 跨域生成地址
+		$enableCrossPath =  config_path('jokerEnableCrossRequest.php');
 		$this->publishes([
-			__DIR__ . '\Tools\Configs\jokerEnableCrossRequest.php' => config_path('jokerEnableCrossRequest.php'),
+			__DIR__ . '\Tools\Configs\jokerEnableCrossRequest.php' => $enableCrossPath,
 		], 'config');
-		Artisan::call('vendor:publish', [
-			'--tag' => 'config'
-		]);
+		// 判断是否重复发布
+		if (!file_exists($enableCrossPath)) {
+			Artisan::call('vendor:publish', [
+				'--tag' => 'config', // 生成配置
+			]);
+			echo "Success => Path: \"$enableCrossPath\"\t";
+		}
 		
 		
-
 		/***********为跨域注入到Kernel.php的middleware数组中**************/
 		$data = file_get_contents(app_path('Http/Kernel.php'));
 		if (false === strpos($data, self::JOKER_INJECT_TOKEN)) { // 是否已经注入，避免重复注入
@@ -82,10 +93,8 @@ class GeneratorServiceProvider extends ServiceProvider
 		}
 		
 		
-		
 		/********************判断.env配置文件是否存在--不存在就复制一份**********/
 		file_exists(base_path('.env')) || copy(base_path('.env.example'), base_path('.env'));
-		
 		
 		
 		/********************判断.env文件中是不是已经存在校验码**********/
@@ -95,6 +104,7 @@ class GeneratorServiceProvider extends ServiceProvider
 			self::jokerAuthInjectEnv();
 		}
 	}
+	
 	/**
 	 * Register the application services.
 	 *
@@ -104,6 +114,7 @@ class GeneratorServiceProvider extends ServiceProvider
 	{
 		JokerPaginator::injectIntoBuilder();
 	}
+	
 	/**
 	 * Get the services provided by the provider.
 	 *
@@ -176,7 +187,7 @@ CODE;
 		$code2 = <<<CODE
 use AuthorizesRequests, JokerApiResponseInjector,
 CODE;
-
+		
 		// 替换唯一标识符
 		$code1 = str_replace('@{token}', self::JOKER_INJECT_TOKEN, $code1);
 		// 替换包和名称
@@ -189,6 +200,6 @@ CODE;
 		], $data);
 		// 重新写入文件
 		file_put_contents(app_path('Http/Controllers/Controller.php'), $data);
-	
+		
 	}
 }
