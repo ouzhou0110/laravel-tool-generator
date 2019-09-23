@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 
 class ModelCRUDCommand extends Command
 {
+	use CommonTrait;
+	
 	const MODEL_DIR = './app/Databases/Models/';
 	const SERVICE_DIR = './app/Databases/Services/';
 	const ACTION_DIR = './app/Databases/Actions/';
@@ -51,8 +53,9 @@ class ModelCRUDCommand extends Command
 	 */
 	public function handle()
 	{
+		$modelName = $this->argument('modelName');
 		// 获取配置
-		$config = self::getConfigInfo($this);
+		$config = self::getConfigInfo($modelName);
 		// 生成model原形
 		self::modelGenerator($config);
 		// 生成action原形
@@ -251,81 +254,4 @@ class ModelCRUDCommand extends Command
 		// 2. 生成文件
 		self::save($file, $code);
 	}
-	
-	
-	/**
-	 * Function: getConfigInfo
-	 * Notes:
-	 * User: Joker-oz
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-09  15:19
-	 * @param $_this
-	 * @return Object
-	 */
-	private static function getConfigInfo($_this)
-	{
-		// 获取文件路径以及文件名
-		$baseName = $_this->argument('modelName');
-		
-		// 信息数组
-		$arr = preg_split('/["\\/","\\\"]/', $baseName);
-		
-		// 文件名
-		$fileName = ucfirst(end($arr));
-		// 文件路径
-		if (count($arr) > 1) { // 如果指定文件路径就删除文件名
-			unset($arr[array_key_last($arr)]);
-			$filePath = implode('/', $arr);
-			$namespace = '\\' . implode('\\', $arr);
-		} else {
-			$filePath = ''; // 使用默认路径
-			$namespace = '';
-		}
-		
-		// 模型名称--驼峰转化为下滑线
-		// 根据大写替换成特殊字符,并保留大写字母
-		$tableName = preg_replace('/([A-Z])/', '_\\1', $fileName);
-		// 去除第一个特殊字符
-		$tableName = substr($tableName, 1);
-		// 转化为小写
-		$tableName = strtolower($tableName);
-		
-		
-		return (object)[
-			'filePath' => $filePath, // 文件路径
-			'fileName' => $fileName, // 文件名
-			'tableName' => $tableName,
-			'namespace' => $namespace
-		];
-	}
-	
-	/**
-	 * Function: saveToFile
-	 * Notes:
-	 * User: Joker-oz
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-09  15:34
-	 * @param $file
-	 * @param $code
-	 * @return string
-	 */
-	private static function save($file, $code)
-	{
-		$dir = dirname($file);
-		if (file_exists($file)) {
-			echo 'Exists => Path:' . $file . PHP_EOL;
-			return false;
-		}
-		if (!file_exists($dir)) {
-			mkdir($dir, 777, true);
-		}
-		$result = file_put_contents($file, $code);
-		if ($result ) {
-			echo 'Success => Path:' . $file . PHP_EOL;
-			return true;
-		}
-		echo 'Fail => Path:' . $file . PHP_EOL;
-		return false;
-	}
-	
 }

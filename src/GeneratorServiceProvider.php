@@ -4,6 +4,7 @@ namespace OuZhou\LaravelToolGenerator;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
+use OuZhou\LaravelToolGenerator\Console\Commands\ControllerCommand;
 use OuZhou\LaravelToolGenerator\Console\Commands\ModelCommonClassGeneratorCommand;
 use OuZhou\LaravelToolGenerator\Console\Commands\ModelCRUDCommand;
 use OuZhou\LaravelToolGenerator\Tools\StaticClasses\JokerPaginator;
@@ -50,8 +51,12 @@ class GeneratorServiceProvider extends ServiceProvider
 		/******************添加生成model的常用命令****************/
 		if ($this->app->runningInConsole()) {
 			$this->commands([
+				// 生成模型通用配置
 				ModelCommonClassGeneratorCommand::class,
+				// 单个模型crud配置
 				ModelCRUDCommand::class,
+				// 生成控制器
+				ControllerCommand::class,
 			]);
 		}
 		/*******************直接生成model通用配置*******************/

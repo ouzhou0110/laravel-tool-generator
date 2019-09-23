@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 
 class ModelCommonClassGeneratorCommand extends Command
 {
+	use CommonTrait;
+	
 	// 必须app开头
 	const MODEL_COMMON_PATH = 'App\Databases\Models\Commons';
 	const SERVICE_COMMON_PATH = 'App\Databases\Services\Commons';
@@ -280,38 +282,6 @@ class ModelCommonClassGeneratorCommand extends Command
 			$file = './' . lcfirst(str_replace('\\', '/', $exceptionKind)) . '/' . $v['class'] . '.php';
 			self::save($file, $code);
 		}
-	}
-	
-	
-	/**
-	 * Function: saveToFile
-	 * Notes:
-	 * User: Joker-oz
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-09  15:34
-	 * @param $file
-	 * @param $code
-	 * @return string
-	 */
-	private static function save($file, $code)
-	{
-		$dir = dirname($file);
-		if (file_exists($file)) {
-			echo 'Exists => Path: "' . $file . '"' . PHP_EOL;
-			return false;
-		}
-		if (!file_exists($dir)) {
-			if (!mkdir($dir, 777, true) && !is_dir($dir)) {
-				throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
-			}
-		}
-		$result = file_put_contents($file, $code);
-		if ($result) {
-			echo 'Success => Path: "' . $file . '"' . PHP_EOL;
-			return true;
-		}
-		echo 'Fail => Path: "' . $file . '"' . PHP_EOL;
-		return false;
 	}
 	
 }
