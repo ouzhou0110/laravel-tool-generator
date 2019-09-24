@@ -4,7 +4,6 @@
 namespace OuZhou\LaravelToolGenerator\Console\Commands\Resources\Route;
 
 
-use Illuminate\Support\Str;
 use OuZhou\LaravelToolGenerator\Console\Commands\CommonTrait;
 
 class CommonRouter
@@ -168,6 +167,25 @@ CODE;
 	}
 	
 	/**
+	 * Function: initializationModeSonFilePath
+	 * Notes: 向一级注入二级的文件路径
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-24  10:13
+	 * @return string
+	 */
+	protected static function initializationModeSonFilePath(): string
+	{
+		return <<<CODE
+@{webSonInject}
+	
+		#@{tag}
+		require '@{path}';
+CODE;
+	
+	}
+	
+	/**
 	 * Function: initSon
 	 * Notes: 初始化子级路由
 	 * User: Joker
@@ -213,7 +231,7 @@ CODE;
 			'',
 			self::INJECT_WAY_3,
 		], $son);
-
+		
 		// 三级注入
 		$threeTag = "$twoTag@Joker";
 		$son = self::injectLastRouter($son, $threeTag, $config);
@@ -257,6 +275,46 @@ CODE;
 		
 		// 数据替换
 		return str_replace(self::INJECT_WAY_3, $data, $model);
+	}
+	
+	/**
+	 * Function: injectLevel2FilePathToLevel1
+	 * Notes: 将二级路由的注入到一级路由的引用中
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-24  10:29
+	 * @param $config
+	 * @param $aimPath
+	 * @return bool|string
+	 */
+	protected static function injectLevel2FilePathToLevel1($config, $aimPath)
+	{
+		$path = base_path('routes/web.php');
+		$data = file_get_contents($path);
+		
+		if (false === strpos($data, self::WEB_SON_CREATED)) {
+			echo "Danger：web.php 的自动注入标识被删除，无法注入，请手动注入（require" . "'$aimPath'" . PHP_EOL;
+			return false;
+		}
+		$model = self::initializationModeSonFilePath();
+		$tag = "@Joker@$aimPath";
+		if (false !== strpos($data, $tag)) {
+			return false;
+		}
+		$model = str_replace([
+			'@{webSonInject}', // 注入标识
+			'@{tag}', // 自身唯一标识
+			'@{path}', // 文件路径
+		], [
+			self::WEB_SON_CREATED,
+			$tag,
+			$aimPath
+		], $model);
+		
+		// 替换
+		$data = str_replace(self::WEB_SON_CREATED, $model, $data);
+		return self::save($path, $data, 0, true);
+		
 	}
 	
 	

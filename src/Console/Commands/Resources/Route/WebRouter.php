@@ -68,7 +68,7 @@ class WebRouter extends CommonRouter
 	 */
 	private static function append($config)
 	{
-		var_dump($config);
+//		var_dump($config);
 		// 注入方式1：UserController 这样的 controller注入
 		if ($config->level == 1) {
 			return self::append1($config);
@@ -78,7 +78,7 @@ class WebRouter extends CommonRouter
 			// 注入方式2：Admin/UserController 这样的 controller注入
 			return self::append2($config);
 		}
-
+		
 		// 注入方式3: Admin/System/IndexController 这样的 controller注入
 		if ($config->firstPrefix === 'web' && $config->level == 3) {
 			// 方式2注入
@@ -108,7 +108,7 @@ class WebRouter extends CommonRouter
 		$data = file_get_contents($path);
 		if (false === strpos($data, self::INJECT_WAY_1)) {
 			// 模型不存在或者被删除，放弃追加
-			echo 'Fail: 指定的标识已经被删除，无法执行操作。标识：' . self::INJECT_WAY_1 . PHP_EOL;
+			echo "Fail: $path 指定的标识已经被删除，无法执行操作。标识：" . self::INJECT_WAY_1 . PHP_EOL;
 			return false;
 		}
 		
@@ -117,10 +117,10 @@ class WebRouter extends CommonRouter
 		$model = self::initializationModeSon1();
 		// 2. 替换数据
 		$tag = '#@Joker@' . $config->controllerPrefix;
-
+		
 		// 检测是否已经存在
 		if (false !== strpos($data, $tag)) {
-			echo "Fail: 标记为 => $tag 的路由已经存在";
+			echo "Fail: $path 标记为 => $tag 的路由已经存在";
 			return false;
 		}
 		$model = str_replace([
@@ -156,13 +156,17 @@ class WebRouter extends CommonRouter
 			// 1. 是，调用 append1 表示为一级路由
 			return self::append1($config);
 		}
-		var_dump($config);
+		
 		// 2. 否，检测 对应的第一级文件是否存在: user.php
 		$path = base_path('routes/' . self::WEB_SON_BASE_PATH . $config->firstPrefix . '.php');
 		if (!file_exists($path)) {
 			// 文件不存在，调用初始化程序
 			return self::initSon($config, $path);
 		}
+		
+		// 注入路径到web.php中
+		self::injectLevel2FilePathToLevel1($config, self::WEB_SON_BASE_PATH . $config->firstPrefix . '.php');
+		
 		// 文件存在
 		$model = file_get_contents($path);
 		// 检测标识是否存在
@@ -175,7 +179,7 @@ class WebRouter extends CommonRouter
 			return self::save($path, $model, 0, true);
 		}
 		// 想想应该不会出现，因为此时控制器肯定重复了
-		echo "Fail: 标记为 => $aimTag 的路由已经存在";
+		echo "Fail: $path 标记为 => $aimTag 的路由已经存在";
 		return false;
 	}
 	
