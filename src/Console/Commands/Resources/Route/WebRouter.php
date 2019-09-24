@@ -142,7 +142,7 @@ class WebRouter extends CommonRouter
 	
 	/**
 	 * Function: append2
-	 * Notes: 
+	 * Notes:
 	 * User: Joker
 	 * Email: <jw.oz@outlook.com>
 	 * Date: 2019-09-24  10:05
