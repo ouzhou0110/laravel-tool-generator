@@ -120,9 +120,8 @@ CODE;
 		return <<<CODE
 @{injectWay1}
 
-		@{injectWay1}@@{routerName}
+		@{tag}
 		Route::resource('@{routerName}', '@{routerController}');
-		
 CODE;
 	
 	}

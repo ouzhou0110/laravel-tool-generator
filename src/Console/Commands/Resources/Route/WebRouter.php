@@ -77,8 +77,18 @@ class WebRouter extends CommonRouter
 		if ($config->level == 2) {
 			// 注入方式2：Admin/UserController 这样的 controller注入
 			return self::append2($config);
-		} else {
-			// 注入方式3: Admin/System/IndexController 这样的 controller注入
+		}
+
+		// 注入方式3: Admin/System/IndexController 这样的 controller注入
+		if ($config->firstPrefix === 'web' && $config->level == 3) {
+			// 方式2注入
+			// 避免大小写错误--首字母统统小写
+			$config->filePath = lcfirst($config->filePath);
+			// 去掉web
+			$config->filePath = str_replace('web/', '', $config->filePath);
+			unset($config->realPath[0]);
+			--$config->level;
+			return self::append2($config);
 		}
 	}
 	
@@ -101,15 +111,25 @@ class WebRouter extends CommonRouter
 			echo 'Fail: 指定的标识已经被删除，无法执行操作。标识：' . self::INJECT_WAY_1 . PHP_EOL;
 			return false;
 		}
+		
 		// 正式追加
 		// 1. 获取追加数据模型
 		$model = self::initializationModeSon1();
 		// 2. 替换数据
+		$tag = '#@Joker@' . $config->controllerPrefix;
+
+		// 检测是否已经存在
+		if (false !== strpos($data, $tag)) {
+			echo "Fail: 标记为 => $tag 的路由已经存在";
+			return false;
+		}
 		$model = str_replace([
+			'@{tag}', // 标识
 			'@{injectWay1}', // 注入标识修改
 			'@{routerName}', // 路由名称
 			'@{routerController}', // 所关联控制器
 		], [
+			$tag,
 			self::INJECT_WAY_1,
 			lcfirst($config->controllerPrefix),
 			$config->fileName,
@@ -120,6 +140,15 @@ class WebRouter extends CommonRouter
 		return self::save($path, $data, FILE_TEXT, true); // 重写文件
 	}
 	
+	/**
+	 * Function: append2
+	 * Notes: 
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-24  10:05
+	 * @param $config
+	 * @return bool|string
+	 */
 	private static function append2($config)
 	{
 		// 检测第一级是不是 web
@@ -138,10 +167,10 @@ class WebRouter extends CommonRouter
 		$model = file_get_contents($path);
 		// 检测标识是否存在
 		$aimTag = '#@' . $config->filePath . '@Joker@' . $config->controllerPrefix;
-		$tag = '@' . $config->filePath . '@Joker';
 		
 		if (false === strpos($model, $aimTag)) {
 			// 没有添加对应信息
+			$tag = '@' . $config->filePath . '@Joker';
 			$model = self::injectLastRouter($model, $tag, $config);
 			return self::save($path, $model, 0, true);
 		}
