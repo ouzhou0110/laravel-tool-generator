@@ -20,16 +20,16 @@ class WebRouter extends CommonRouter
 		// 检测是否被重写
 		if (false === strpos($data, self::WEB_KEY)) {
 			// 加载初始化模板
-			self::init(self::initializationMode());
+			self::init(self::initBaseWebRoute());
 		}
-		// 加载追加逻辑
+		// 注入子路由
 		self::append($config);
 		
 	}
 	
 	/**
 	 * Function: init
-	 * Notes: 初始化web路由
+	 * Notes: 初始化web.php路由
 	 * User: Joker
 	 * Email: <jw.oz@outlook.com>
 	 * Date: 2019-09-23  9:29
@@ -68,7 +68,7 @@ class WebRouter extends CommonRouter
 	 */
 	private static function append($config)
 	{
-//		var_dump($config);
+		var_dump($config);
 		// 注入方式1：UserController 这样的 controller注入
 		if ($config->level == 1) {
 			return self::append1($config);
@@ -79,17 +79,20 @@ class WebRouter extends CommonRouter
 			return self::append2($config);
 		}
 		
-		// 注入方式3: Admin/System/IndexController 这样的 controller注入
+		// 注入方式2：Admin/UserController 这样的 controller注入
 		if ($config->firstPrefix === 'web' && $config->level == 3) {
-			// 方式2注入
-			// 避免大小写错误--首字母统统小写
+			// 方式2注入 == 避免大小写错误--首字母统统小写
 			$config->filePath = lcfirst($config->filePath);
 			// 去掉web
 			$config->filePath = str_replace('web/', '', $config->filePath);
 			unset($config->realPath[0]);
 			--$config->level;
+//			var_dump($config);
 			return self::append2($config);
 		}
+		
+		// 注入方式3: Admin/System/.../IndexController 这样的 controller注入--至少三级
+		return self::append3($config);
 	}
 	
 	/**
@@ -100,6 +103,8 @@ class WebRouter extends CommonRouter
 	 * Date: 2019-09-23  10:38
 	 * @param $config
 	 * @return bool
+	 *
+	 * 例子：UserController Web/UserController
 	 */
 	private static function append1($config): bool
 	{
@@ -114,9 +119,9 @@ class WebRouter extends CommonRouter
 		
 		// 正式追加
 		// 1. 获取追加数据模型
-		$model = self::initializationModeSon1();
+		$model = self::level1Mode();
 		// 2. 替换数据
-		$tag = '#@Joker@' . $config->controllerPrefix;
+		$tag = '@Joker/' . $config->controllerPrefix; // #@Joker/User
 		
 		// 检测是否已经存在
 		if (false !== strpos($data, $tag)) {
@@ -124,18 +129,18 @@ class WebRouter extends CommonRouter
 			return false;
 		}
 		$model = str_replace([
-			'@{tag}', // 标识
-			'@{injectWay1}', // 注入标识修改
+			'@{tag}', // 自身唯一标识
+			'@{injectWay1}', // 注入地点标识
 			'@{routerName}', // 路由名称
 			'@{routerController}', // 所关联控制器
 		], [
-			$tag,
-			self::INJECT_WAY_1,
-			lcfirst($config->controllerPrefix),
-			$config->fileName,
+			$tag, // #@Joker/User
+			self::INJECT_WAY_1, // 固定：#one@injectWay1-dc483e80a7a0bd9ef71d8cf973673924
+			lcfirst($config->controllerPrefix), // user
+			$config->fileName, // UserController
 		], $model);
 		
-		// 注入到指定位置
+		// 注入到 web.php 指定位置
 		$data = str_replace(self::INJECT_WAY_1, $model, $data);
 		return self::save($path, $data, FILE_TEXT, true); // 重写文件
 	}
@@ -148,6 +153,8 @@ class WebRouter extends CommonRouter
 	 * Date: 2019-09-24  10:05
 	 * @param $config
 	 * @return bool|string
+	 *
+	 * 例子 Admin/UserController  Web/UserController
 	 */
 	private static function append2($config)
 	{
@@ -157,30 +164,104 @@ class WebRouter extends CommonRouter
 			return self::append1($config);
 		}
 		
-		// 2. 否，检测 对应的第一级文件是否存在: user.php
+		// 2. 否，检测 对应的第一级文件是否存在: admin.php
 		$path = base_path('routes/' . self::WEB_SON_BASE_PATH . $config->firstPrefix . '.php');
 		if (!file_exists($path)) {
 			// 文件不存在，调用初始化程序
-			return self::initSon($config, $path);
+			$model = self::initLevel2RouteFile($config);
+		} else {
+			$model = file_get_contents($path);
+		}
+//		echo $model . PHP_EOL;
+		
+		// 检测末级标识是否存在
+		$lastTag = '@' . $config->filePath . '/Joker/' . $config->controllerPrefix; // #@Admin/Joker/User
+//		echo $lastTag;
+		if (false !== strpos($model, $lastTag)) {
+			// 想想应该不会出现，因为此时控制器肯定重复了
+			echo "Danger: $path 标记为 => $lastTag 的路由已经存在";
+			return false;
 		}
 		
-		// 注入路径到web.php中
-		self::injectLevel2FilePathToLevel1($config, self::WEB_SON_BASE_PATH . $config->firstPrefix . '.php');
 		
-		// 文件存在
-		$model = file_get_contents($path);
 		// 检测标识是否存在
-		$aimTag = '#@' . $config->filePath . '@Joker@' . $config->controllerPrefix;
-		
+		$aimTag = '@' . $config->filePath . '/Joker'; // #@Admin/Joker
 		if (false === strpos($model, $aimTag)) {
-			// 没有添加对应信息
-			$tag = '@' . $config->filePath . '@Joker';
-			$model = self::injectLastRouter($model, $tag, $config);
-			return self::save($path, $model, 0, true);
+			// 没有二级路由的group
+			$injectTag = self::INJECT_WAY_2 . '@' . $config->filePath;
+			$tag = $aimTag;
+			$namespace = '';
+			$prefix = '';
+			$sonInject = self::INJECT_WAY_3;
+			$level2 = self::initLevel2Group($injectTag, $tag, $namespace, $prefix, $sonInject);
+			
+			// 组装到 $model 中
+			$model = str_replace($injectTag, $level2, $model);
 		}
-		// 想想应该不会出现，因为此时控制器肯定重复了
-		echo "Fail: $path 标记为 => $aimTag 的路由已经存在";
-		return false;
+		
+		// 注入末级路由
+//		echo $model;
+		$routerName = lcfirst($config->controllerPrefix); // user
+		$injectTag = self::INJECT_WAY_3 . $aimTag; // #three@injectWay3-e10adc3949ba59abbe56e057f20f883e@Admin/User
+		$aimTag = $lastTag; // #@Admin/Joker
+		$controllerName = $config->fileName; // UserController
+		$lastLevel = self::initLastLevelRoute($injectTag, $aimTag, $routerName, $controllerName);
+//		echo $lastLevel;
+		// 组装到 $model 中
+		$model = str_replace($injectTag, $lastLevel, $model);
+//		echo $model;
+		// 保存
+		self::save($path, $model, 0, true);
+		// 注入路径到web.php中
+		return self::injectLevel2FilePathToWeb( base_path('routes/web.php'),self::WEB_SON_BASE_PATH . $config->firstPrefix . '.php');
+		
 	}
+	
+	/**
+	 * Function: append3
+	 * Notes:
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-24  17:36
+	 *
+	 * @param $config
+	 *
+	 * 例子
+	 * Admin/System/.../UserController
+	 *
+	 */
+	private static function append3($config)
+	{
+		// 检测第一级是不是 web 是就去掉
+		if ($config->firstPrefix == 'web') {
+			// 去掉web
+			$config->filePath = lcfirst($config->filePath);
+			$config->filePath = str_replace('web/', '', $config->filePath);
+			unset($config->realPath[0]);
+			--$config->level;
+		}
+		
+		// 2. 否，检测 对应的第一级文件是否存在: admin.php
+		$path = base_path('routes/' . self::WEB_SON_BASE_PATH . $config->firstPrefix . '.php');
+		if (!file_exists($path)) {
+			// 文件不存在，调用初始化程序
+			$model = self::initLevel2RouteFile($config);
+		} else {
+			$model = file_get_contents($path);
+		}
+//		echo $model . PHP_EOL;
+		
+		// 检测末级标识是否存在
+		$lastTag = '@' . $config->filePath . '/' . $config->controllerPrefix; // #@Admin/Joker/User
+		echo $lastTag;
+		if (false !== strpos($model, $lastTag)) {
+			// 想想应该不会出现，因为此时控制器肯定重复了
+			echo "Danger: $path 标记为 => $lastTag 的路由已经存在";
+			return false;
+		}
+		
+		
+	}
+	
 	
 }

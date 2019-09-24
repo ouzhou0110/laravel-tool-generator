@@ -29,14 +29,14 @@ class CommonRouter
 	
 	
 	/**
-	 * Function: initialize
-	 * Notes: 初始化路由模型
+	 * Function: initBaseWebRoute
+	 * Notes: 初始化web.php
 	 * User: Joker
 	 * Email: <jw.oz@outlook.com>
 	 * Date: 2019-09-23  8:58
 	 * @return string
 	 */
-	protected static function initializationMode(): string
+	protected static function initBaseWebRoute(): string
 	{
 		return <<<CODE
 <?php
@@ -81,14 +81,38 @@ CODE;
 	}
 	
 	/**
-	 * Function: initializationModeSon
-	 * Notes: 子权限路由模板
+	 * Function: level1Mode
+	 * Notes: web.php 注入使用的模型
 	 * User: Joker
 	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-23  15:52
+	 * Date: 2019-09-23  10:26
+	 * @return string
+	 *
+	 * 例子
+	 * #one@injectWay1-dc483e80a7a0bd9ef71d8cf973673924
+	 * #@Joker/User
+	 * Route::resource('user', 'UserController');
+	 */
+	protected static function level1Mode(): string
+	{
+		return <<<CODE
+@{injectWay1}
+
+		#@{tag}
+		Route::resource('@{routerName}', '@{routerController}');
+CODE;
+	
+	}
+	
+	/**
+	 * Function: level2FileMode
+	 * Notes: 二级路由文件的模板
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-24  16:05
 	 * @return string
 	 */
-	protected static function initializationModeSon(): string
+	protected static function level2FileMode(): string
 	{
 		return <<<CODE
 <?php
@@ -97,8 +121,8 @@ CODE;
 #override tag：@{override}
 
 #@{tag}
-Route::group(['namespace' => '@{namespace}','prefix' => '@{prefix}', 'middleware' => ''],function () {
-	@{webSonInject2}@{namespace}
+Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}', 'middleware' => ''], function () {
+	@{injectWay2}@{tag}
 	
 });
 
@@ -107,74 +131,37 @@ CODE;
 	}
 	
 	/**
-	 * Function: initializationModeSon1
-	 * Notes: 一级注入
+	 * Function: level2GroupMode
+	 * Notes: 二级路由 group 模板
 	 * User: Joker
 	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-23  10:26
+	 * Date: 2019-09-24  16:34
 	 * @return string
+	 *
 	 */
-	protected static function initializationModeSon1(): string
+	protected static function level2GroupMode()
 	{
 		return <<<CODE
-@{injectWay1}
+@{injectTag}
 
-		@{tag}
-		Route::resource('@{routerName}', '@{routerController}');
-CODE;
-	
-	}
-	
-	/**
-	 * Function: initializationModeSon2
-	 * Notes: 二级注入
-	 * User: Joker
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-23  16:08
-	 * @return string
-	 */
-	protected static function initializationModeSon2(): string
-	{
-		return <<<CODE
-@{fatherCode}
-
-	#@{tag}@{namespace}
-	Route::group(['namespace' => '@{namespace}','prefix' => '@{prefix}', 'middleware' => ''], function () {
-		@{webSonInject3}@{namespace}
+	#@{tag}
+	Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}', 'middleware' => ''], function () {
+		@{injectWay2}@{tag}
+		
 	});
-	
 CODE;
-	
-	}
-	
-	/**
-	 * Function: initializationModeSon3
-	 * Notes: 三级注入
-	 * User: Joker
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-23  16:27
-	 * @return string
-	 */
-	protected static function initializationModeSon3(): string
-	{
-		return <<<CODE
-@{fatherCode}
 
-		#@{tag}@@{name}
-		Route::resource('@{routerName}', '@{routerController}');
-CODE;
-	
 	}
 	
 	/**
-	 * Function: initializationModeSonFilePath
-	 * Notes: 向一级注入二级的文件路径
+	 * Function: level2FilePathToWebMode
+	 * Notes: 将二级路由文件注入 web.php 的引用中的模板
 	 * User: Joker
 	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-24  10:13
+	 * Date: 2019-09-24  16:16
 	 * @return string
 	 */
-	protected static function initializationModeSonFilePath(): string
+	private static function level2FilePathToWebMode(): string
 	{
 		return <<<CODE
 @{webSonInject}
@@ -186,125 +173,54 @@ CODE;
 	}
 	
 	/**
-	 * Function: initSon
-	 * Notes: 初始化子级路由
+	 * Function: lastLevelRouteMode
+	 * Notes: 末级路由模板
 	 * User: Joker
 	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-23  16:51
-	 * @param $config
-	 * @param $path
+	 * Date: 2019-09-24  17:31
 	 * @return string
 	 */
-	protected static function initSon($config, $path)
+	private static function lastLevelRouteMode()
 	{
-		// 1. 加载初始化模板
-		$model = self::initializationModeSon();
-		$model = str_replace([
-			'@{override}', // 注入标识
-			'@{tag}', // 父级标识
-			'@{namespace}', // 文件路径
-			'@{prefix}', // 路由前缀
-			'@{webSonInject2}', // 儿子注入标识
-		], [
-			self::WEB_SON_CREATED,
-			$config->filePath,
-			$config->filePath,
-			lcfirst($config->filePath),
-			self::INJECT_WAY_2,
-		], $model);
-		// 二级的标识
-		$twoCode = self::INJECT_WAY_2 . $config->filePath;
-		$twoTag = '@' . $config->filePath;
-		
-		// 注入儿子
-		$son = self::initializationModeSon2();
-		$son = str_replace([
-			'@{fatherCode}', // 父级标识
-			'@{tag}', // 父级tag
-			'@{namespace}', // 文件路径
-			'@{prefix}', // 路由前缀
-			'@{webSonInject3}', // 儿子注入标识
-		], [
-			$twoCode,
-			$twoTag,
-			'',
-			'',
-			self::INJECT_WAY_3,
-		], $son);
-		
-		// 三级注入
-		$threeTag = "$twoTag@Joker";
-		$son = self::injectLastRouter($son, $threeTag, $config);
-		
-		// 替换一级
-		$model = str_replace($twoCode, $son, $model);
-		echo $model;
-		
-		// 保存文件
-		return self::save($path, $model);
-	}
-	
-	
-	/**
-	 * Function: injectLastRouter
-	 * Notes: 注入最后一级的方法
-	 * User: Joker
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-23  18:18
-	 * @param $model 父级数据 也是需要返回的数据
-	 * @param $tag 自身的标记
-	 * @param $config 配置
-	 * @return mixed
-	 */
-	protected static function injectLastRouter($model, $tag, $config)
-	{
-		$data = self::initializationModeSon3();
-		$data = str_replace([
-			'@{fatherCode}', // 父级标识
-			'@{tag}', // 父级标识
-			'@{name}', // 功能名称
-			'@{routerName}', // 路由前缀
-			'@{routerController}', // 控制器名称
-		], [
-			self::INJECT_WAY_3,
-			$tag,
-			$config->controllerPrefix,
-			lcfirst($config->controllerPrefix),
-			$config->fileName,
-		], $data);
-		
-		// 数据替换
-		return str_replace(self::INJECT_WAY_3, $data, $model);
+		return <<<CODE
+@{injectTag}
+            
+            #@{tag}
+            Route::resource('@{routeName}', '@{controller}');
+CODE;
+
 	}
 	
 	/**
-	 * Function: injectLevel2FilePathToLevel1
-	 * Notes: 将二级路由的注入到一级路由的引用中
+	 * Function: injectLevel2FilePathToWeb
+	 * Notes: 将二级路由注入到 web.php 的引用中
 	 * User: Joker
 	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-24  10:29
-	 * @param $config
-	 * @param $aimPath
+	 * Date: 2019-09-24  16:13
+	 * @param $filePath web.php or api.php 路径
+	 * @param $aimPath 需要注入的路径
 	 * @return bool|string
+	 *
+	 * Admin/UserController
 	 */
-	protected static function injectLevel2FilePathToLevel1($config, $aimPath)
+	protected static function injectLevel2FilePathToWeb($filePath, $aimPath)
 	{
-		$path = base_path('routes/web.php');
-		$data = file_get_contents($path);
+		
+		$data = file_get_contents($filePath);
 		
 		if (false === strpos($data, self::WEB_SON_CREATED)) {
 			echo "Danger：web.php 的自动注入标识被删除，无法注入，请手动注入（require" . "'$aimPath'" . PHP_EOL;
 			return false;
 		}
-		$model = self::initializationModeSonFilePath();
-		$tag = "@Joker@$aimPath";
+		$model = self::level2FilePathToWebMode();
+		$tag = "@Joker/$aimPath";
 		if (false !== strpos($data, $tag)) {
 			return false;
 		}
 		$model = str_replace([
 			'@{webSonInject}', // 注入标识
-			'@{tag}', // 自身唯一标识
-			'@{path}', // 文件路径
+			'@{tag}', // 自身唯一标识： #@Joker/webRoutes/admin.php
+			'@{path}', // 文件路径 webRoutes/admin.php
 		], [
 			self::WEB_SON_CREATED,
 			$tag,
@@ -313,9 +229,109 @@ CODE;
 		
 		// 替换
 		$data = str_replace(self::WEB_SON_CREATED, $model, $data);
-		return self::save($path, $data, 0, true);
+		return self::save($filePath, $data, 0, true);
 		
 	}
 	
+	/**
+	 * Function: initLevel2RouteFile
+	 * Notes: 出示化二级路由文件
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-24  16:07
+	 * @param $config
+	 * @return string
+	 *
+	 * Admin/UserController
+	 */
+	protected static function initLevel2RouteFile($config): string
+	{
+		// 1. 加载初始化模板
+		$model = self::level2FileMode();
+		$model = str_replace([
+			'@{override}', // 注入标识
+			'@{tag}', // 自身标识
+			'@{namespace}', // 文件路径
+			'@{prefix}', // 路由前缀
+			'@{injectWay2}', // 儿子注入标识
+		], [
+			self::WEB_SON_CREATED,
+			'@' . $config->filePath,
+			$config->filePath,
+			lcfirst($config->filePath),
+			self::INJECT_WAY_2,
+		], $model);
+		
+		// 保存文件
+		return $model;
+	}
+	
+	/**
+	 * Function: initLevel2Group
+	 * Notes: 初始化二级路由的 group
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-24  16:40
+	 *
+	 * Admin/UserController
+	 * @param $injectTag
+	 * @param $tag
+	 * @param $namespace
+	 * @param $prefix
+	 * @param $sonInject
+	 * @return mixed|string
+	 */
+	protected static function initLevel2Group($injectTag, $tag, $namespace, $prefix, $sonInject)
+	{
+		$model = self::level2GroupMode();
+		$model = str_replace([
+			'@{injectTag}', // 注入地点标识：#two@injectWay2-ec26001d1ff7885b72a834b40862f056@Admin
+			'@{tag}', // 自身唯一标识： #@Admin/User
+			'@{namespace}', // 命名空间：''
+			'@{prefix}', // 路由前缀：''
+			'@{injectWay2}', // 子集注入地点：#two@injectWay2-ec26001d1ff7885b72a834b40862f056@Admin/User
+		], [
+			$injectTag,
+			$tag,
+			$namespace,
+			$prefix,
+			$sonInject,
+		], $model);
+		
+		return $model;
+	}
+	
+	/**
+	 * Function: initLastLevelRoute
+	 * Notes: 初始化末级路由信息 resource
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-24  17:11
+	 * @param $injectTag
+	 * @param $tag
+	 * @param $routeName
+	 * @param $controllerName
+	 * @return mixed|string
+	 *
+	 * Admin/UserController
+	 */
+	protected static function initLastLevelRoute($injectTag, $tag, $routeName, $controllerName):string
+	{
+		$model = self::lastLevelRouteMode();
+		$model = str_replace([
+			'@{injectTag}', // 注入地点标识：#three@injectWay3-e10adc3949ba59abbe56e057f20f883e@Admin/User
+			'@{tag}', // 自身唯一标识： #@Admin/User
+			'@{routeName}', // 路由名称：user
+			'@{controller}', // 控制器名称：UserController
+		], [
+			$injectTag,
+			$tag,
+			$routeName,
+			$controllerName,
+		], $model);
+		
+		return $model;
+		
+	}
 	
 }

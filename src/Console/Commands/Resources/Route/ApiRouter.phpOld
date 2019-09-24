@@ -4,7 +4,7 @@
 namespace OuZhou\LaravelToolGenerator\Console\Commands\Resources\Route;
 
 
-class ApiRouter extends CommonRouter
+class ApiRouter extends OldCommonRouter
 {
 	/**
 	 * Function: apiGenerator
