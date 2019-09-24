@@ -237,19 +237,21 @@ CODE;
 		return self::save($filePath, $data, 0, true);
 		
 	}
-	
-	/**
-	 * Function: initLevel2RouteFile
-	 * Notes: 出示化二级路由文件
-	 * User: Joker
-	 * Email: <jw.oz@outlook.com>
-	 * Date: 2019-09-24  16:07
-	 * @param $config
-	 * @return string
-	 *
-	 * Admin/UserController
-	 */
-	protected static function initLevel2RouteFile($config): string
+
+    /**
+     * Function: initLevel2RouteFile
+     * Notes: 出示化二级路由文件
+     * User: Joker
+     * Email: <jw.oz@outlook.com>
+     * Date: 2019-09-24  16:07
+     * @param $tag
+     * @param $namespace
+     * @param $prefix
+     * @return string
+     *
+     * Admin/UserController
+     */
+	protected static function initLevel2RouteFile($tag, $namespace, $prefix): string
 	{
 		// 1. 加载初始化模板
 		$model = self::level2FileMode();
@@ -262,9 +264,9 @@ CODE;
             '@{endTag}',
 		], [
 			self::WEB_SON_CREATED,
-			'@' . $config->filePath,
-			$config->filePath,
-			lcfirst($config->filePath),
+            $tag,
+            $namespace,
+            $prefix,
 			self::INJECT_WAY_2,
             self::END_TAG
 		], $model);
