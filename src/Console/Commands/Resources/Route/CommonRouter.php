@@ -26,6 +26,9 @@ class CommonRouter
 	const INJECT_WAY_2 = '#two@injectWay2-ec26001d1ff7885b72a834b40862f056';
 	// 注入方式3: Admin/System/IndexController 这样的 controller注入
 	const INJECT_WAY_3 = '#three@injectWay3-e10adc3949ba59abbe56e057f20f883e';
+
+	// 注入结束符
+	const END_TAG = '%';
 	
 	
 	/**
@@ -42,7 +45,7 @@ class CommonRouter
 <?php
 
 #Danger:如果需要使用 Joker_oz 的方法，请勿删除带有 # 标记行
-#override tag：@{override}
+#override tag：@{override}@{endTag}
 
 Route::Group(['prefix' => '@{prefix}', 'namespace' => '@{namespace}', 'middleware' => 'apiRequestLog'], function (){
     // 权限通用 -- 不需要登录认证
@@ -66,12 +69,12 @@ Route::Group(['prefix' => '@{prefix}', 'namespace' => '@{namespace}', 'middlewar
 		
 		Route::post('upload/video', 'UploadController@video');// 视频上传
 		
-		@{injectWay1}
+		@{injectWay1}@{endTag}
 	});
     
     // 单独权限--加上登录认证
 	Route::group(['middleware' => 'apiLogin'], function() {
-		@{webSonInject}
+		@{webSonInject}@{endTag}
 	});
  
 });
@@ -96,9 +99,9 @@ CODE;
 	protected static function level1Mode(): string
 	{
 		return <<<CODE
-@{injectWay1}
+@{injectWay1}@{endTag}
 
-		#@{tag}
+		#@{tag}@{endTag}
 		Route::resource('@{routerName}', '@{routerController}');
 CODE;
 	
@@ -118,11 +121,11 @@ CODE;
 <?php
 
 #Danger:如果需要使用 Joker_oz 的方法，请勿删除带有 # 标记行
-#override tag：@{override}
+#override tag：@{override}@{endTag}
 
-#@{tag}
+#@{tag}@{endTag}
 Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}', 'middleware' => ''], function () {
-	@{injectWay2}@{tag}
+	@{injectWay2}@{tag}@{endTag}
 	
 });
 
@@ -142,11 +145,11 @@ CODE;
 	protected static function level2GroupMode()
 	{
 		return <<<CODE
-@{injectTag}
+@{injectTag}@{endTag}
 
-	#@{tag}
+	#@{tag}@{endTag}
 	Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}', 'middleware' => ''], function () {
-		@{injectWay2}@{tag}
+		@{injectWay2}@{tag}@{endTag}
 		
 	});
 CODE;
@@ -164,9 +167,9 @@ CODE;
 	private static function level2FilePathToWebMode(): string
 	{
 		return <<<CODE
-@{webSonInject}
+@{webSonInject}@{endTag}
 	
-		#@{tag}
+		#@{tag}@{endTag}
 		require '@{path}';
 CODE;
 	
@@ -183,9 +186,9 @@ CODE;
 	private static function lastLevelRouteMode()
 	{
 		return <<<CODE
-@{injectTag}
+@{injectTag}@{endTag}
             
-            #@{tag}
+            #@{tag}@{endTag}
             Route::resource('@{routeName}', '@{controller}');
 CODE;
 
@@ -208,27 +211,29 @@ CODE;
 		
 		$data = file_get_contents($filePath);
 		
-		if (false === strpos($data, self::WEB_SON_CREATED)) {
+		if (false === strpos($data, self::WEB_SON_CREATED . self::END_TAG)) {
 			echo "Danger：web.php 的自动注入标识被删除，无法注入，请手动注入（require" . "'$aimPath'" . PHP_EOL;
 			return false;
 		}
 		$model = self::level2FilePathToWebMode();
 		$tag = "@Joker/$aimPath";
-		if (false !== strpos($data, $tag)) {
+		if (false !== strpos($data, $tag . self::END_TAG)) {
 			return false;
 		}
 		$model = str_replace([
 			'@{webSonInject}', // 注入标识
 			'@{tag}', // 自身唯一标识： #@Joker/webRoutes/admin.php
 			'@{path}', // 文件路径 webRoutes/admin.php
+            '@{endTag}',
 		], [
 			self::WEB_SON_CREATED,
 			$tag,
-			$aimPath
+			$aimPath,
+            self::END_TAG,
 		], $model);
 		
 		// 替换
-		$data = str_replace(self::WEB_SON_CREATED, $model, $data);
+		$data = str_replace(self::WEB_SON_CREATED . self::END_TAG, $model, $data);
 		return self::save($filePath, $data, 0, true);
 		
 	}
@@ -254,12 +259,14 @@ CODE;
 			'@{namespace}', // 文件路径
 			'@{prefix}', // 路由前缀
 			'@{injectWay2}', // 儿子注入标识
+            '@{endTag}',
 		], [
 			self::WEB_SON_CREATED,
 			'@' . $config->filePath,
 			$config->filePath,
 			lcfirst($config->filePath),
 			self::INJECT_WAY_2,
+            self::END_TAG
 		], $model);
 		
 		// 保存文件
@@ -290,12 +297,14 @@ CODE;
 			'@{namespace}', // 命名空间：''
 			'@{prefix}', // 路由前缀：''
 			'@{injectWay2}', // 子集注入地点：#two@injectWay2-ec26001d1ff7885b72a834b40862f056@Admin/User
+            '@{endTag}',
 		], [
 			$injectTag,
 			$tag,
 			$namespace,
 			$prefix,
 			$sonInject,
+            self::END_TAG
 		], $model);
 		
 		return $model;
@@ -323,11 +332,13 @@ CODE;
 			'@{tag}', // 自身唯一标识： #@Admin/User
 			'@{routeName}', // 路由名称：user
 			'@{controller}', // 控制器名称：UserController
+            '@{endTag}',
 		], [
 			$injectTag,
 			$tag,
 			$routeName,
 			$controllerName,
+            self::END_TAG
 		], $model);
 		
 		return $model;
