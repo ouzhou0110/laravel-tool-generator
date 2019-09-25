@@ -25,6 +25,10 @@ class CommonRouter
 
 	// 注入结束符
 	const END_TAG = '%';
+	// group标识
+	const GROUP_TAG = '{group}';
+	// resource标识
+	const RESOURCE_TAG = '{resource}';
 	
 	
 	/**
@@ -65,7 +69,7 @@ Route::Group(['prefix' => '@{prefix}', 'namespace' => '@{namespace}', 'middlewar
 		
 		Route::post('upload/video', 'UploadController@video');// 视频上传
 		
-		@{injectWay1}@{endTag}
+		@{injectWay1}@{endTag}@{resourceTag}
 	});
     
     // 单独权限--加上登录认证
@@ -97,7 +101,7 @@ CODE;
 		return <<<CODE
 @{injectWay1}@{endTag}
 
-		#@{tag}@{endTag}
+		#@{tag}@{endTag}@{resourceTag}
 		Route::resource('@{routerName}', '@{routerController}');
 CODE;
 	
@@ -119,7 +123,7 @@ CODE;
 #Danger:如果需要使用 Joker_oz 的方法，请勿删除带有 # 标记行
 #override tag：@{override}@{endTag}
 
-#@{tag}@{endTag}
+#@{tag}@{endTag}@{groupTag}
 Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}', 'middleware' => ''], function () {
 	@{injectWay2}@{tag}@{endTag}
 	
@@ -143,7 +147,7 @@ CODE;
 		return <<<CODE
 @{injectTag}@{endTag}
 
-	#@{tag}@{endTag}
+	#@{tag}@{endTag}@{groupTag}
 	Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}', 'middleware' => ''], function () {
 		@{injectWay2}@{tag}@{endTag}
 		
@@ -184,7 +188,7 @@ CODE;
 		return <<<CODE
 @{injectTag}@{endTag}
             
-            #@{tag}@{endTag}
+            #@{tag}@{endTag}@{resourceTag}
             Route::resource('@{routeName}', '@{controller}');
 CODE;
 
@@ -258,13 +262,15 @@ CODE;
 			'@{prefix}', // 路由前缀
 			'@{injectWay2}', // 儿子注入标识
             '@{endTag}',
+			'@{groupTag}',
 		], [
 			self::WEB_SON_CREATED,
             $tag,
             $namespace,
             $prefix,
 			self::INJECT_TAG,
-            self::END_TAG
+            self::END_TAG,
+			self::GROUP_TAG
 		], $model);
 		
 		// 保存文件
@@ -296,13 +302,15 @@ CODE;
 			'@{prefix}', // 路由前缀：''
 			'@{injectWay2}', // 子集注入地点：#two@injectWay2-ec26001d1ff7885b72a834b40862f056@Admin/User
             '@{endTag}',
+			'@{groupTag}',
 		], [
 			$injectTag,
 			$tag,
 			$namespace,
 			$prefix,
 			$sonInject,
-            self::END_TAG
+            self::END_TAG,
+			self::GROUP_TAG
 		], $model);
 		
 		return $model;
@@ -331,12 +339,14 @@ CODE;
 			'@{routeName}', // 路由名称：user
 			'@{controller}', // 控制器名称：UserController
             '@{endTag}',
+			'@{resourceTag}'
 		], [
 			$injectTag,
 			$tag,
 			$routeName,
 			$controllerName,
-            self::END_TAG
+            self::END_TAG,
+			self::RESOURCE_TAG
 		], $model);
 		
 		return $model;

@@ -48,8 +48,29 @@ class ControllerCommand extends Command
 		$model = ucfirst(strtolower($this->option('model')));
 		// controller是否简单
 		$simple = strtolower($this->option('simple'));
+//		echo $simple;
+
+		$isWebInject = false; // web开头自动降级
+		if ($config->firstPrefix === 'web') {
+			// 方式2注入 == 避免大小写错误--首字母统统小写
+			$config->filePath = lcfirst($config->filePath);
+			// 去掉web
+			$config->filePath = str_replace('web/', '', $config->filePath);
+			unset($config->realPath[0]);
+			--$config->level;
+			$config->firstPrefix = lcfirst($config->realPath[1]);
+			$isWebInject = true;
+		}
+//			var_dump($config);
+		
+		// 判断是否存在
+		$path = app_path('Http/Controllers/' . $config->filePath  . '/' . $config->fileName . '.php');
+		if (file_exists($path)) {
+			echo "Danger: 控制器已经存在 => $path";
+			return false;
+		}
 		// 3. 先生成controller, 后生成路由，如果 controller 生成失败则放弃生成路由
-		self::controllerGenerator($config, $model, $simple) && self::routeGenerator($config);
+		self::controllerGenerator($config, $model, $simple) && self::routeGenerator($config, $isWebInject);
 	}
 	
 	/**
@@ -59,13 +80,14 @@ class ControllerCommand extends Command
 	 * Email: <jw.oz@outlook.com>
 	 * Date: 2019-09-20  14:55
 	 * @param $config
+	 * @param bool $isWeb
 	 */
-	private static function routeGenerator($config)
+	private static function routeGenerator($config, bool $isWeb)
 	{
 		// 检测是不是遵循那种规则：规则1=> Api/User/UserManage/IndexController 路由使用api.php
 		// 规则2=> User/UserManage/IndexController 路由使用web.php
 		// 通过前缀判断
-		$config->firstPrefix !== 'api' ? WebRouter::generator($config) : ApiRouter::generator($config);
+		$isWeb ? WebRouter::generator($config) : ApiRouter::generator($config);
 	}
 	
 	/**
@@ -76,10 +98,11 @@ class ControllerCommand extends Command
 	 * Date: 2019-09-20  15:30
 	 * @param $config
 	 * @param $model
-	 * @param bool $simple
+	 * @param string $simple
+	 * @return bool
 	 */
-	private static function controllerGenerator($config, $model, $simple = false)
+	private static function controllerGenerator($config, $model, $simple = 'false')
 	{
-		return $simple == false ? Controller::generator($config, $model) : SimpleController::generator($config, $model);
+		return $simple === 'false' ? Controller::generator($config, $model) : SimpleController::generator($config, $model);
 	}
 }

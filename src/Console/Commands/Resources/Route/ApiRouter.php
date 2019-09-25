@@ -126,7 +126,7 @@ class ApiRouter extends CommonRouter
 		$tag = '@Joker/' . $config->controllerPrefix; // #@Joker/User%
 		
 		// 检测是否已经存在
-		if (false !== strpos($data, $tag . self::END_TAG)) {
+		if (false !== strpos($data, $tag . self::END_TAG . self::RESOURCE_TAG)) {
 			echo "Fail: $path 标记为 => $tag 的路由已经存在";
 			return false;
 		}
@@ -136,12 +136,14 @@ class ApiRouter extends CommonRouter
 			'@{routerName}', // 路由名称
 			'@{routerController}', // 所关联控制器
 			'@{endTag}',
+			'@{resourceTag}'
 		], [
 			$tag, // #@Joker/User
 			self::INJECT_TAG, // 固定：#one@injectWay1-dc483e80a7a0bd9ef71d8cf973673924
 			lcfirst($config->controllerPrefix), // user
 			$config->fileName, // UserController
 			self::END_TAG,
+			self::RESOURCE_TAG
 		], $model);
 		
 		// 注入到 api.php 指定位置
@@ -184,7 +186,7 @@ class ApiRouter extends CommonRouter
 		$lastTag = '@' . $config->filePath . '/' . $config->controllerPrefix; // #@Admin/Joker/User
 //		echo $lastTag;
 //		return false;
-		if (false !== strpos($model, $lastTag . self::END_TAG)) {
+		if (false !== strpos($model, $lastTag . self::END_TAG . self::RESOURCE_TAG)) {
 			// 想想应该不会出现，因为此时控制器肯定重复了
 			echo "Danger: $path 标记为 => $lastTag 的路由已经存在";
 			return false;
@@ -196,7 +198,7 @@ class ApiRouter extends CommonRouter
 //        $aimTag = '@' . $config->filePath . '/Joker'; // #@Admin/Joker
 		$aimTag = '@' . $config->filePath; // #@Admin/Joker
 //		echo $aimTag;
-		if (false === strpos($model, $aimTag . self::END_TAG)) {
+		if (false === strpos($model, $aimTag . self::END_TAG . self::GROUP_TAG)) {
 			// 没有二级路由的group
 			$injectTag = self::INJECT_TAG . '@' . $config->filePath;
 			$tag = $aimTag;
@@ -270,7 +272,7 @@ class ApiRouter extends CommonRouter
 		// 检测末级标识是否存在
 		$lastTag = '@' . $config->filePath . '/' . $config->controllerPrefix; // #@Admin/Joker/User
 //		echo $lastTag;
-		if (false !== strpos($model, $lastTag . self::END_TAG)) {
+		if (false !== strpos($model, $lastTag . self::END_TAG . self::RESOURCE_TAG)) {
 			// 想想应该不会出现，因为此时控制器肯定重复了
 			echo "Danger: $path 标记为 => $lastTag 的路由已经存在";
 			return false;
@@ -286,7 +288,7 @@ class ApiRouter extends CommonRouter
 			// 当前tag
 			$tag = '@' . implode('/', array_slice($config->realPath, 0, $k + 2));
 //            echo $tag;
-			if (false === strpos($model, $tag . self::END_TAG)) {
+			if (false === strpos($model, $tag . self::END_TAG . self::GROUP_TAG)) {
 				$injectTag = self::INJECT_TAG . '@' . implode('/', array_slice($config->realPath, 0, $k + 1));
 //                $tag = $tag;
 				$namespace = $v;

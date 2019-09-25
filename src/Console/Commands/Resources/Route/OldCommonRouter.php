@@ -238,7 +238,7 @@ CODE;
 		
 		// 替换一级
 		$model = str_replace($twoCode, $son, $model);
-		echo $model;
+//		echo $model;
 		
 		// 保存文件
 		return self::save($path, $model);
