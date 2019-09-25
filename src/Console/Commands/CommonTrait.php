@@ -52,7 +52,7 @@ trait CommonTrait
 		
 		// 生成路由模板需要的数据
 		$arr[] = $controllerPrefix;
-//		$arr = array_values($arr); // 重置索引
+		$arr = array_values($arr); // 重置索引
 		return (object)[
 			'filePath' => $filePath, // 文件路径
 			'fileName' => $fileName, // 文件名

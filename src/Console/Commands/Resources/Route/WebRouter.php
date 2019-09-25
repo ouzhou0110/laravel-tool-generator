@@ -49,7 +49,7 @@ class WebRouter extends CommonRouter
             self::WEB_KEY,
             'web',
             'Web',
-            self::INJECT_WAY_1, // 一级路由的注入
+            self::INJECT_TAG, // 一级路由的注入
             self::WEB_SON_CREATED, // 二级路由注入定位符
             self::END_TAG, // 结束标记
         ], $model);
@@ -114,9 +114,9 @@ class WebRouter extends CommonRouter
         // 1，检测是否被初始化了
         $path = base_path('routes/web.php');
         $data = file_get_contents($path);
-        if (false === strpos($data, self::INJECT_WAY_1 . self::END_TAG)) {
+        if (false === strpos($data, self::INJECT_TAG . self::END_TAG)) {
             // 模型不存在或者被删除，放弃追加
-            echo "Fail: $path 指定的标识已经被删除，无法执行操作。标识：" . self::INJECT_WAY_1 . PHP_EOL;
+            echo "Fail: $path 指定的标识已经被删除，无法执行操作。标识：" . self::INJECT_TAG . PHP_EOL;
             return false;
         }
 
@@ -139,14 +139,14 @@ class WebRouter extends CommonRouter
             '@{endTag}',
         ], [
             $tag, // #@Joker/User
-            self::INJECT_WAY_1, // 固定：#one@injectWay1-dc483e80a7a0bd9ef71d8cf973673924
+            self::INJECT_TAG, // 固定：#one@injectWay1-dc483e80a7a0bd9ef71d8cf973673924
             lcfirst($config->controllerPrefix), // user
             $config->fileName, // UserController
             self::END_TAG,
         ], $model);
 
         // 注入到 web.php 指定位置
-        $data = str_replace(self::INJECT_WAY_1 . self::END_TAG, $model, $data);
+        $data = str_replace(self::INJECT_TAG . self::END_TAG, $model, $data);
         return self::save($path, $data, FILE_TEXT, true); // 重写文件
     }
 
@@ -196,13 +196,14 @@ class WebRouter extends CommonRouter
 
 //        $aimTag = '@' . $config->filePath . '/Joker'; // #@Admin/Joker
         $aimTag = '@' . $config->filePath; // #@Admin/Joker
+//		echo $aimTag;
         if (false === strpos($model, $aimTag . self::END_TAG)) {
             // 没有二级路由的group
-            $injectTag = self::INJECT_WAY_2 . '@' . $config->filePath;
+            $injectTag = self::INJECT_TAG . '@' . $config->filePath;
             $tag = $aimTag;
             $namespace = '';
             $prefix = '';
-            $sonInject = self::INJECT_WAY_3;
+            $sonInject = self::INJECT_TAG;
             $level2 = self::initLevel2Group($injectTag, $tag, $namespace, $prefix, $sonInject);
 
             // 组装到 $model 中
@@ -212,7 +213,7 @@ class WebRouter extends CommonRouter
         // 注入末级路由
 //		echo $model;
         $routerName = lcfirst($config->controllerPrefix); // user
-        $injectTag = self::INJECT_WAY_3 . $aimTag; // #three@injectWay3-e10adc3949ba59abbe56e057f20f883e@Admin/User
+        $injectTag = self::INJECT_TAG . $aimTag; // #three@injectWay3-e10adc3949ba59abbe56e057f20f883e@Admin/User
         $aimTag = $lastTag; // #@Admin/Joker
         $controllerName = $config->fileName; // UserController
         $lastLevel = self::initLastLevelRoute($injectTag, $aimTag, $routerName, $controllerName);
@@ -287,15 +288,15 @@ class WebRouter extends CommonRouter
             $tag = '@' . implode('/', array_slice($config->realPath, 0, $k + 2));
 //            echo $tag;
             if (false === strpos($model, $tag . self::END_TAG)) {
-                $injectTag = self::INJECT_WAY_3 . '@' . implode('/', array_slice($config->realPath, 0, $k + 1));
+                $injectTag = self::INJECT_TAG . '@' . implode('/', array_slice($config->realPath, 0, $k + 1));
 //                $tag = $tag;
                 $namespace = $v;
                 $prefix = lcfirst($v);
-                $sonInject = self::INJECT_WAY_3;
+                $sonInject = self::INJECT_TAG;
                 $level2 = self::initLevel2Group($injectTag, $tag, $namespace, $prefix, $sonInject);
 //		        echo $level2 . PHP_EOL;
                 if ($son) {
-                    $sonTag = self::INJECT_WAY_3 . $tag;
+                    $sonTag = self::INJECT_TAG . $tag;
                     $son = str_replace($sonTag . self::END_TAG, $son, $level2);
                 } else {
                     $son = $level2;
@@ -303,7 +304,7 @@ class WebRouter extends CommonRouter
             } else {
                 // 找到了
                 $isReplace = true;
-                $sonTag = self::INJECT_WAY_3 . $tag;
+                $sonTag = self::INJECT_TAG . $tag;
                 if ($son) {
                     $model = str_replace($sonTag . self::END_TAG, $son, $model);
                 }
@@ -312,7 +313,7 @@ class WebRouter extends CommonRouter
         }
         if (!$isReplace) {
             // 从第一级开始替换：@admin% 开始
-            $findTag = self::INJECT_WAY_2 . '@' . ucfirst($config->firstPrefix);
+            $findTag = self::INJECT_TAG . '@' . ucfirst($config->firstPrefix);
             if ($son) {
                 $model = str_replace($findTag . self::END_TAG, $son, $model);
             }
@@ -324,7 +325,7 @@ class WebRouter extends CommonRouter
         // 注入末级路由
 //		echo $model;
         $routerName = lcfirst($config->controllerPrefix); // user
-        $injectTag = self::INJECT_WAY_3 . '@' . $config->filePath; // #three@injectWay3-e10adc3949ba59abbe56e057f20f883e@Admin/User
+        $injectTag = self::INJECT_TAG . '@' . $config->filePath; // #three@injectWay3-e10adc3949ba59abbe56e057f20f883e@Admin/User
         $aimTag = $lastTag; // #@Admin/Joker
         $controllerName = $config->fileName; // UserController
         $lastLevel = self::initLastLevelRoute($injectTag, $aimTag, $routerName, $controllerName);

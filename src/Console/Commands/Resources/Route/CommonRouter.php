@@ -20,12 +20,8 @@ class CommonRouter
 	const API_SON_BASE_PATH = 'apiRoutes/';
 	const API_SON_CREATED = '#apiSon14300f6011ae057b3c02a7ea2d2d4d5e';
 	
-	// 注入方式1：UserController 这样的 controller注入
-	const INJECT_WAY_1 = '#one@injectWay1-dc483e80a7a0bd9ef71d8cf973673924';
-	// 注入方式2：Admin/UserController 这样的 controller注入
-	const INJECT_WAY_2 = '#two@injectWay2-ec26001d1ff7885b72a834b40862f056';
-	// 注入方式3: Admin/System/IndexController 这样的 controller注入
-	const INJECT_WAY_3 = '#three@injectWay3-e10adc3949ba59abbe56e057f20f883e';
+	// 注入标识
+	const INJECT_TAG = '#one@injectWay1-dc483e80a7a0bd9ef71d8cf973673924';
 
 	// 注入结束符
 	const END_TAG = '%';
@@ -267,7 +263,7 @@ CODE;
             $tag,
             $namespace,
             $prefix,
-			self::INJECT_WAY_2,
+			self::INJECT_TAG,
             self::END_TAG
 		], $model);
 		

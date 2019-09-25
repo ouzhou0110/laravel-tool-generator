@@ -210,10 +210,10 @@ CODE;
 			$config->filePath,
 			$config->filePath,
 			lcfirst($config->filePath),
-			self::INJECT_WAY_2,
+			self::INJECT_TAG,
 		], $model);
 		// 二级的标识
-		$twoCode = self::INJECT_WAY_2 . $config->filePath;
+		$twoCode = self::INJECT_TAG . $config->filePath;
 		$twoTag = '@' . $config->filePath;
 		
 		// 注入儿子
@@ -229,7 +229,7 @@ CODE;
 			$twoTag,
 			'',
 			'',
-			self::INJECT_WAY_3,
+			self::INJECT_TAG,
 		], $son);
 		
 		// 三级注入
@@ -266,7 +266,7 @@ CODE;
 			'@{routerName}', // 路由前缀
 			'@{routerController}', // 控制器名称
 		], [
-			self::INJECT_WAY_3,
+			self::INJECT_TAG,
 			$tag,
 			$config->controllerPrefix,
 			lcfirst($config->controllerPrefix),
@@ -274,7 +274,7 @@ CODE;
 		], $data);
 		
 		// 数据替换
-		return str_replace(self::INJECT_WAY_3, $data, $model);
+		return str_replace(self::INJECT_TAG, $data, $model);
 	}
 	
 	/**
