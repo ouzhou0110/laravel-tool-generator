@@ -26,15 +26,9 @@
             "aliases": {
                 "JokerFileUploader": "OuZhou/LaravelToolGenerator/Tools/Facades/JokerFileUploader"
             }
-        },
-        "branch-alias": {
-            "1.0.4.x": "1.0.4-dev",
-            "1.0.3.x": "1.0.3-dev",
-            "1.0.1.x": "1.0.1-dev"
         }
     },
     "require": {
-        "php": "^7.0.0",
-        "laravel": "^5.5.0"
+        "php": "^7.0.0"
     }
 }
