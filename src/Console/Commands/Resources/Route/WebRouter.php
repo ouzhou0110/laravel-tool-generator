@@ -48,8 +48,8 @@ class WebRouter extends CommonRouter
 			'@{resourceTag}'
 		], [
 			self::WEB_KEY,
-			'web',
-			'Web',
+			'',
+			'',
 			self::INJECT_TAG, // 一级路由的注入
 			self::WEB_SON_CREATED, // 二级路由注入定位符
 			self::END_TAG, // 结束标记

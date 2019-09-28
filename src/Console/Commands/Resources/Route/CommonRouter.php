@@ -47,10 +47,11 @@ class CommonRouter
 #Danger:如果需要使用 Joker_oz 的方法，请勿删除带有 # 标记行
 #override tag：@{override}@{endTag}
 
-Route::Group(['prefix' => '@{prefix}', 'namespace' => '@{namespace}', 'middleware' => 'apiRequestLog'], function (){
+use Illuminate\Support\Facades\Route;
+
+Route::group(['middleware' => 'requestLog'], function () {
     // 权限通用 -- 不需要登录认证
-    Route::group([], function ()
-    {
+    Route::group([], function () {
 		Route::get('no/login', 'LoginController@noLogin')->name('no.login'); // 没有登录
 		
 		Route::get('no/authority', 'LoginController@noAuthority')->name('no.authority'); // 没有权限
@@ -62,18 +63,18 @@ Route::Group(['prefix' => '@{prefix}', 'namespace' => '@{namespace}', 'middlewar
     });
 	
 	// 权限通用 -- 需要登录认证
-    Route::group(['middleware' => 'apiLogin'], function() {
+    Route::group(['middleware' => 'isLogin'], function() {
 		Route::get('index', 'LoginController@index'); // 测试
 	
 		Route::post('upload', 'UploadController@index');//文件上传
 		
 		Route::post('upload/video', 'UploadController@video');// 视频上传
 		
-		@{injectWay1}@{endTag}@{resourceTag}
+		@{injectWay1}@{endTag}
 	});
     
     // 单独权限--加上登录认证
-	Route::group(['middleware' => 'apiLogin'], function() {
+	Route::group(['middleware' => 'isLogin'], function() {
 		@{webSonInject}@{endTag}
 	});
  
@@ -122,6 +123,7 @@ CODE;
 
 #Danger:如果需要使用 Joker_oz 的方法，请勿删除带有 # 标记行
 #override tag：@{override}@{endTag}
+
 
 #@{tag}@{endTag}@{groupTag}
 Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}', 'middleware' => ''], function () {

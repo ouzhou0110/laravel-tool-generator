@@ -1,0 +1,25 @@
+<?php
+namespace App\Http\Middleware;
+
+use Closure;
+use JokerAuth;
+
+class LoginMiddleware
+{
+	/**
+	 * Handle an incoming request.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Closure  $next
+	 * @return mixed
+	 */
+	public function handle($request, Closure $next)
+	{
+        if (!JokerAuth::checkLogin($request)) {
+            // 重定向到没有登录接口
+            return redirect('api/v1/no/login');
+        }
+
+        return $next($request);
+	}
+}

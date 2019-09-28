@@ -1,0 +1,13 @@
+<?php
+#注入标识
+#e10adc3949ba59abbe56e057f20f883e
+
+namespace App\Http\JokerAuth;
+
+
+use OuZhou\LaravelToolGenerator\Auth\JokerAuthByToken;
+
+class AuthToken extends JokerAuthByToken
+{
+    // 这里随便写拓展
+}

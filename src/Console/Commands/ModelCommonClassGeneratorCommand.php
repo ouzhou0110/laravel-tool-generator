@@ -180,7 +180,7 @@ class ModelCommonClassGeneratorCommand extends Command
 		// 替换数据--trait
 		$code = str_replace('@{trait}', 'JokerApiResponseInjector', $code);
 		// 替换数据--traitNamespace
-		$code = str_replace('@{traitNamespace}', 'OuZhou\LaravelToolGenerator\Tools\Traits\JokerApiResponseInjector', $code);
+		$code = str_replace('@{traitNamespace}', 'OuZhou\LaravelToolGenerator\Traits\JokerApiResponseInjector', $code);
 		
 		// 存储路径
 		$file = './' . lcfirst(str_replace('\\', '/', self::SERVICE_COMMON_PATH)) . '/' . self::SERVICE_NAME . '.php';

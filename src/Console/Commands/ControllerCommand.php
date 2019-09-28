@@ -60,7 +60,9 @@ class ControllerCommand extends Command
 			--$config->level;
 			$config->firstPrefix = lcfirst($config->realPath[1]);
 			$isWebInject = true;
-		}
+		} else if (strtolower($config->firstPrefix) !== 'api') {
+		    $isWebInject = true;
+        }
 //			var_dump($config);
 		
 		// 判断是否存在

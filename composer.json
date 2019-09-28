@@ -24,7 +24,7 @@
                 "OuZhou\\LaravelToolGenerator\\GeneratorServiceProvider"
             ],
             "aliases": {
-                "JokerFileUploader": "OuZhou/LaravelToolGenerator/Tools/Facades/JokerFileUploader"
+                "JokerAuth": "OuZhou\\LaravelToolGenerator\\Facades\\JokerAuth"
             }
         }
     },
