@@ -30,7 +30,7 @@ class JokerAuth
         if (strtolower(env('LOGIN_METHOD')) === 'cookie') {
                 return $this->cookie->$name(...$arguments);
         }
-        return $this->cookie->$name(...$arguments);
+        return $this->token->$name(...$arguments);
     }
 
 }
