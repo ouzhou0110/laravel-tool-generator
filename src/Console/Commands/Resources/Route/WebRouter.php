@@ -18,7 +18,7 @@ class WebRouter extends CommonRouter
 		// 获取数据
 		file_exists($filePath) && $data = file_get_contents($filePath);
 		// 检测是否被重写
-		if (false === strpos($data, self::WEB_KEY)) {
+		if (false === strpos($data, self::INJECT_KEY)) {
 			// 加载初始化模板
 			self::init(self::initBaseWebRoute());
 		}
@@ -47,7 +47,7 @@ class WebRouter extends CommonRouter
 			'@{endTag}', // 结束标记
 			'@{resourceTag}'
 		], [
-			self::WEB_KEY,
+			self::INJECT_KEY,
 			'',
 			'',
 			self::INJECT_TAG, // 一级路由的注入

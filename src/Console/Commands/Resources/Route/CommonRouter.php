@@ -10,7 +10,7 @@ class CommonRouter
 {
 	use CommonTrait;
 	
-	const WEB_KEY = 'web85a67bc449b060c32637a034162af586';
+	const INJECT_KEY = 'web85a67bc449b060c32637a034162af586';
 	const API_KEY = 'api93a67bc879b060ab041de034162af586';
 	
 	// web的子类是否被初始化

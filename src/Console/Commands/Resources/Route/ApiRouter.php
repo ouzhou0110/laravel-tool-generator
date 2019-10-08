@@ -18,7 +18,7 @@ class ApiRouter extends CommonRouter
 		// 获取数据
 		file_exists($filePath) && $data = file_get_contents($filePath);
 		// 检测是否被重写
-		if (false === strpos($data, self::WEB_KEY)) {
+		if (false === strpos($data, self::INJECT_KEY)) {
 			// 加载初始化模板
 			self::init(self::initBaseWebRoute());
 		}
@@ -46,9 +46,9 @@ class ApiRouter extends CommonRouter
 			'@{webSonInject}', // 子权限标识注入
 			'@{endTag}', // 结束标记
 		], [
-			self::WEB_KEY,
-			'web',
-			'Web',
+			self::INJECT_KEY,
+			'v1',
+			'Api',
 			self::INJECT_TAG, // 一级路由的注入
 			self::WEB_SON_CREATED, // 二级路由注入定位符
 			self::END_TAG, // 结束标记
@@ -73,7 +73,7 @@ class ApiRouter extends CommonRouter
 		if ($config->firstPrefix === 'api') {
 			// 方式2注入 == 避免大小写错误--首字母统统小写
 			$config->filePath = lcfirst($config->filePath);
-			// 去掉web
+			// 去掉api
 			$config->filePath = str_replace('api/', '', $config->filePath);
 			unset($config->realPath[0]);
 			--$config->level;
@@ -165,10 +165,10 @@ class ApiRouter extends CommonRouter
 	private static function append2($config)
 	{
 		// 检测第一级是不是 web
-		if ($config->firstPrefix == 'web') {
-			// 1. 是，调用 append1 表示为一级路由
-			return self::append1($config);
-		}
+//		if ($config->firstPrefix == 'web') {
+//		// 1. 是，调用 append1 表示为一级路由
+//			return self::append1($config);
+//		}
 		// 2. 否，检测 对应的第一级文件是否存在: admin.php
 		$path = base_path('routes/' . self::API_SON_BASE_PATH . $config->firstPrefix . '.php');
 		if (!file_exists($path)) {
