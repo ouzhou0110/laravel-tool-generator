@@ -72,7 +72,7 @@ class ControllerCommand extends Command
 			return false;
 		}
 		// 3. 先生成controller, 后生成路由，如果 controller 生成失败则放弃生成路由
-		self::controllerGenerator($config, $model, $simple) && self::routeGenerator($config, $isWebInject);
+		self::controllerGenerator($config, $model, $simple) && ( config('jokerLaravelGenerator.route') && self::routeGenerator($config, $isWebInject));
 	}
 	
 	/**

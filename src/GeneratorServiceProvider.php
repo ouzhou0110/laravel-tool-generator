@@ -319,5 +319,13 @@ CODE;
 			$data = file_get_contents($path);
 			self::save($aimPath, $data);
 		}
+		
+		// jokerLaravelGenerator 写入config
+		$aimPath = base_path('config/jokerLaravelGenerator.php');
+		if (!file_exists($aimPath)) {
+			$path = __DIR__ . '\Configs\jokerLaravelGenerator.php';
+			$data = file_get_contents($path);
+			self::save($aimPath, $data);
+		}
     }
 }

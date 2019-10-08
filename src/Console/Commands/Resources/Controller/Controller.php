@@ -20,6 +20,9 @@ class Controller extends Templates
 	public static function generator($config, $model)
 	{
 		$data = self::controllerMode($config, $model);
+		if ($data == 1) { // 处理没有绑定model的时候产生的返回值
+			return true;
+		}
 		
 		$path = app_path('Http/Controllers/' . $config->filePath  . '/' . $config->fileName . '.php');
 		return self::save($path, $data);
