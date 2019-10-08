@@ -126,7 +126,7 @@ CODE;
 
 
 #@{tag}@{endTag}@{groupTag}
-Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}', 'middleware' => ''], function () {
+Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}'], function () {
 	@{injectWay2}@{tag}@{endTag}
 	
 });
@@ -150,7 +150,7 @@ CODE;
 @{injectTag}@{endTag}
 
 	#@{tag}@{endTag}@{groupTag}
-	Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}', 'middleware' => ''], function () {
+	Route::group(['namespace' => '@{namespace}', 'prefix' => '@{prefix}'], function () {
 		@{injectWay2}@{tag}@{endTag}
 		
 	});
