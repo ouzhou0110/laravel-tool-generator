@@ -35,7 +35,7 @@ class ModelCommonClassGeneratorCommand extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'ouzhou:modelGenerator';
+	protected $signature = 'ouzhou:generator';
 	
 	/**
 	 * The console command description.

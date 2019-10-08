@@ -8,7 +8,6 @@ use OuZhou\LaravelToolGenerator\Console\Commands\CommonTrait;
 use OuZhou\LaravelToolGenerator\Console\Commands\ControllerCommand;
 use OuZhou\LaravelToolGenerator\Console\Commands\ModelCommonClassGeneratorCommand;
 use OuZhou\LaravelToolGenerator\Console\Commands\ModelCRUDCommand;
-use OuZhou\LaravelToolGenerator\Facades\JokerAuth;
 use OuZhou\LaravelToolGenerator\Tools\StaticClasses\JokerPaginator;
 
 class GeneratorServiceProvider extends ServiceProvider
@@ -67,12 +66,12 @@ class GeneratorServiceProvider extends ServiceProvider
         /*******************直接生成model通用配置*******************/
         // 判断是否已经生成
         if (!is_dir(base_path(self::COMMON_PACKAGE))) {
-            Artisan::call('ouzhou:modelGenerator');
-        }
+			Artisan::call('ouzhou:generator');
+		}
 
 
-        /*********************向controller注入apiResponseInjector*************************/
-        $data = file_get_contents(app_path('Http/Controllers/Controller.php'));
+		/*********************向controller注入apiResponseInjector*************************/
+		$data = file_get_contents(app_path('Http/Controllers/Controller.php'));
         if (false === strpos($data, self::JOKER_INJECT_TOKEN)) { // 是否已经注入，避免重复注入
             if (false !== strpos($data, self::JOKER_API_RESPONSE_CONTROLLER_NAME)) { // 检查是否版本更新，导致定位符不存在了
                 self::jokerApiResponseInjectorController($data);
