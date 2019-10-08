@@ -295,5 +295,29 @@ CODE;
             $data = file_get_contents($path);
             self::save($aimPath, $data);
         }
+        
+        // jokerTool 写入App\Http\JokerTools
+		$aimPath = app_path('Http/JokerTools/JokerTool.php');
+		if (!file_exists($aimPath)) {
+			$path = __DIR__ . '\Tools\StaticClasses\JokerTool.txt';
+			$data = file_get_contents($path);
+			self::save($aimPath, $data);
+		}
+	
+		// jokerFileUploader 写入App\Http\JokerTools
+		$aimPath = app_path('Http/JokerTools/JokerFileUploader.php');
+		if (!file_exists($aimPath)) {
+			$path = __DIR__ . '\Tools\StaticClasses\JokerFileUploader.txt';
+			$data = file_get_contents($path);
+			self::save($aimPath, $data);
+		}
+	
+		// jokerLog 写入App\Http\JokerTools
+		$aimPath = app_path('Http/JokerTools/JokerLog.php');
+		if (!file_exists($aimPath)) {
+			$path = __DIR__ . '\Tools\StaticClasses\JokerLog.txt';
+			$data = file_get_contents($path);
+			self::save($aimPath, $data);
+		}
     }
 }

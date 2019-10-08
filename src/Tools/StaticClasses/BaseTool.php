@@ -2,7 +2,7 @@
 
 namespace OuZhou\LaravelToolGenerator\Tools\StaticClasses;
 
-class JokerTool
+class BaseTool
 {
 	/**
 	 * Function: dateAddTimestamp
@@ -37,7 +37,7 @@ class JokerTool
 	 * @return mixed
 	 * @throws \Exception
 	 */
-	public static function JokerStringReplaceWithTag(string $string, int $start, int $end = 0, string $tag = '*')
+	public static function stringReplaceWithTag(string $string, int $start, int $end = 0, string $tag = '*')
 	{
 		// 验证字符串长度是否小于开始位置
 		$strlen = mb_strlen($string);

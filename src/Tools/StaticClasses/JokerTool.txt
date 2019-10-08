@@ -1,0 +1,12 @@
+<?php
+
+
+namespace App\Http\JokerTools;
+
+
+use OuZhou\LaravelToolGenerator\Tools\StaticClasses\BaseTool;
+
+class JokerTool extends BaseTool
+{
+	// 这里写拓展
+}

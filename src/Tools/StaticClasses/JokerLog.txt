@@ -1,0 +1,11 @@
+<?php
+
+
+namespace App\Http\JokerTools;
+
+use OuZhou\LaravelToolGenerator\Tools\StaticClasses\BaseLog;
+
+class JokerLog extends BaseLog
+{
+	// 这里写拓展
+}

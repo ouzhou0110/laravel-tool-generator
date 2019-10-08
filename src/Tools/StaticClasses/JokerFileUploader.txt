@@ -1,0 +1,12 @@
+<?php
+
+
+namespace App\Http\JokerTools;
+
+
+use OuZhou\LaravelToolGenerator\Tools\StaticClasses\BaseFileUploader;
+
+class JokerFileUploader extends BaseFileUploader
+{
+	// 这里写拓展
+}

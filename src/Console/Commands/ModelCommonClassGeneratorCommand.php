@@ -27,7 +27,7 @@ class ModelCommonClassGeneratorCommand extends Command
 	const ACTION_NAME = 'CommonAction';
 	
 	// 工具名称
-	const TOOL_PATH = 'OuZhou\LaravelToolGenerator\Tools\StaticClasses\JokerTool';
+	const TOOL_PATH = 'App\Http\JokerTools\JokerTool';
 	const TOOL_NAME = 'JokerTool';
 	
 	/**

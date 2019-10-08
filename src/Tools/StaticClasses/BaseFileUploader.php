@@ -7,7 +7,7 @@ use OuZhou\LaravelToolGenerator\Exceptions\MakeDirFailException;
 use OuZhou\LaravelToolGenerator\Exceptions\NotFoundFileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class JokerFileUploader
+class BaseFileUploader
 {
 	// 基础路径
 	const FILE_SAVE_DIR = '/uploads/';

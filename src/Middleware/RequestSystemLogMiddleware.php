@@ -2,7 +2,7 @@
 namespace OuZhou\LaravelToolGenerator\Middleware;
 
 use Closure;
-use OuZhou\LaravelToolGenerator\Tools\StaticClasses\JokerLog;
+use OuZhou\LaravelToolGenerator\Tools\StaticClasses\BaseLog;
 
 class RequestSystemLogMiddleware
 {
@@ -15,7 +15,7 @@ class RequestSystemLogMiddleware
 	 */
 	public function handle($request, Closure $next)
 	{
-	    JokerLog::writeSystemLogs();
+	    BaseLog::writeSystemLogs();
         return $next($request);
 	}
 }

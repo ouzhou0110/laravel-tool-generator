@@ -5,7 +5,7 @@ namespace OuZhou\LaravelToolGenerator\Tools\StaticClasses;
 
 use Illuminate\Routing\Route;
 
-final class JokerLog
+class BaseLog
 {
 	/**
 	 * Function: writeSystemLogs
