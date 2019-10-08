@@ -27,7 +27,7 @@ class JokerAuth
 
     public function __call($name, $arguments)
     {
-        if (strtolower(env('LOGIN_METHOD')) === 'cookie') {
+        if (strtolower(config('jokerAuth.loginMethod')) === 'cookie') {
                 return $this->cookie->$name(...$arguments);
         }
         return $this->token->$name(...$arguments);

@@ -79,7 +79,7 @@ class GeneratorServiceProvider extends ServiceProvider
             }
         }
 
-        /**********************发布跨域配置****************************/
+        /**********************发布配置文件****************************/
         // 跨域生成地址
         $enableCrossPath = config_path('jokerEnableCrossRequest.php');
         $this->publishes([
@@ -92,7 +92,19 @@ class GeneratorServiceProvider extends ServiceProvider
             ]);
             echo "Success => Path: \"$enableCrossPath\"\t";
         }
-
+        
+        // auth认证方式
+		$authPath = config_path('jokerAuth.php');
+		$this->publishes([
+			__DIR__ . '\Configs\jokerAuth.php' => $authPath,
+		], 'config');
+		// 判断是否重复发布
+		if (!file_exists($authPath)) {
+			Artisan::call('vendor:publish', [
+				'--tag' => 'config', // 生成配置
+			]);
+			echo "Success => Path: \"$authPath\"\t";
+		}
 
         /***********为跨域注入到Kernel.php的middleware数组中**************/
         $data = file_get_contents(app_path('Http/Kernel.php'));
@@ -106,11 +118,11 @@ class GeneratorServiceProvider extends ServiceProvider
 
 
         /********************判断.env文件中是不是已经存在校验码**********/
-        $data = file_get_contents(base_path('.env'));
-        /************为自定义登录验证注入配置到.env**************/
-        if (false === strpos($data, self::JOKER_INJECT_TOKEN)) {
-            self::jokerAuthInjectEnv();
-        }
+//        $data = file_get_contents(base_path('.env'));
+//        /************为自定义登录验证注入配置到.env**************/
+//        if (false === strpos($data, self::JOKER_INJECT_TOKEN)) {
+//            self::jokerAuthInjectEnv();
+//        }
 
         /***********将jokerAuth的拓展写入对应位置*************/
         self::jokerAuthSonTemplateInjectJokerAuthPackage();
