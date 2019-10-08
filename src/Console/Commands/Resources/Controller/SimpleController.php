@@ -37,8 +37,6 @@ class SimpleController extends Templates
 	 */
 	private static function simpleControllerMode($config, $model):string
 	{
-		// 获取模型
-		$data = self::common();
 		// 初始化配置
 		$commonConfig = [
 			'namespace' => $config->namespace,// namespace
@@ -53,8 +51,15 @@ class SimpleController extends Templates
 			'update' => '',// update
 			'destroy' => '',// destroy
 		];
-		$data = self::commonConfig($data, $commonConfig);
-		
+		if ($model) {
+			// 获取模型
+			$data = self::common();
+			$data = self::commonConfig($data, $commonConfig);
+		} else {
+			// 获取模型
+			$data = self::commonWithoutModel();
+			$data = self::commonConfigWithoutModel($data, $commonConfig);
+		}
 //		echo $data;
 		return $data;
 	}

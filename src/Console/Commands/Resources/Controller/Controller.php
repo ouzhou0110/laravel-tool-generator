@@ -34,8 +34,7 @@ class Controller extends Templates
 	 */
 	private static function controllerMode($config, $model):string
 	{
-		// 获取模型
-		$data = self::common();
+		
 		// 初始化配置
 		$index = self::indexConfig(self::index(), $config, $model);
 		$create = self::createConfig(self::create(), $config, $model);
@@ -57,7 +56,14 @@ class Controller extends Templates
 			'update' => $update,// update
 			'destroy' => $destroy,// destroy
 		];
-		$data = self::commonConfig($data, $commonConfig);
+		if ($model) {
+			// 获取模型
+			$data = self::common();
+			$data = self::commonConfig($data, $commonConfig);
+		} else {
+			// 获取模型
+			return SimpleController::generator($config, $model);
+		}
 		
 //		echo $data;
 		return $data;

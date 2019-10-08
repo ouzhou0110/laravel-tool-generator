@@ -57,6 +57,44 @@ class TemplatesConfig
 	}
 	
 	/**
+	 * Function: commonConfigWithoutModel
+	 * Notes: 通用模型配置
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-25  11:36
+	 * @param $data
+	 * @param $config
+	 * @return mixed
+	 */
+	protected static function commonConfigWithoutModel($data, $config)
+	{
+		$data = str_replace([
+			'@{namespace}',// namespace
+			'@{controllerName}',// controllerName
+			'@{index}',// index
+			'@{create}',// create
+			'@{store}',// store
+			'@{show}',// show
+			'@{edit}',// edit
+			'@{update}',// update
+			'@{destroy}',// destroy
+			
+		], [
+			$config['namespace'],
+			$config['controllerName'],
+			$config['index'],
+			$config['create'],
+			$config['store'],
+			$config['show'],
+			$config['edit'],
+			$config['update'],
+			$config['destroy'],
+		] , $data);
+		
+		return $data;
+	}
+	
+	/**
 	 * Function: indexConfig
 	 * Notes: index 模型配置
 	 * User: Joker

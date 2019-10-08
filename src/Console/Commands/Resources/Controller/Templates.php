@@ -130,6 +130,117 @@ class @{controllerName} extends Controller
 CODE;
 
 	}
+	/**
+	 * Function: common
+	 * Notes: 通用模板
+	 * User: Joker
+	 * Email: <jw.oz@outlook.com>
+	 * Date: 2019-09-25  11:13
+	 * @return string
+	 */
+	protected static function commonWithoutModel()
+	{
+		return <<<CODE
+<?php
+
+namespace App\Http\Controllers@{namespace};
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
+
+class @{controllerName} extends Controller
+{
+	# CUD 操作
+	# R 操作
+	# service 核心操作
+	
+	# 注入依赖
+	public function __construct()
+	{
+	}
+	
+	
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request \$request)
+    {
+        @{index}
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        @{create}
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  \$request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request \$request)
+    {
+        @{store}
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  \$id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(\$id)
+    {
+        @{show}
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  \$id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(\$id)
+    {
+        @{edit}
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  \$request
+     * @param  int  \$id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request \$request, \$id)
+    {
+        @{update}
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  \$id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(\$id)
+    {
+        @{destroy}
+    }
+}
+
+CODE;
+
+	}
 	
 	/**
 	 * Function: index
