@@ -251,7 +251,7 @@ CODE;
     private static function jokerAuthSonTemplateInjectJokerAuthPackage()
     {
         // cookie写入
-        $aimPath = app_path('Http/Controllers/JokerAuth/AuthCookie.php');
+        $aimPath = app_path('Http/JokerAuth/AuthCookie.php');
         if (!file_exists($aimPath)) {
             $path = __DIR__ . '\Auth\cookieExtend.txt';
             $data = file_get_contents($path);
@@ -259,7 +259,7 @@ CODE;
         }
 
         // token写入
-        $aimPath = app_path('Http/Controllers/JokerAuth/AuthToken.php');
+        $aimPath = app_path('Http/JokerAuth/AuthToken.php');
         if (!file_exists($aimPath)) {
             $path = __DIR__ . '\Auth\tokenExtend.txt';
             $data = file_get_contents($path);
