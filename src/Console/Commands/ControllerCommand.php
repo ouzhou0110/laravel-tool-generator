@@ -45,7 +45,7 @@ class ControllerCommand extends Command
 		// 路径解析
 		$config = self::getConfigInfo($this->argument('name'));
 		// 模型名称--首字母大写
-		$model = ucfirst(strtolower($this->option('model')));
+		$model = ucfirst($this->option('model'));
 		// controller是否简单
 		$simple = strtolower($this->option('simple'));
 //		echo $simple;
